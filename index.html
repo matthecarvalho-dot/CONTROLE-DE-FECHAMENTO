@@ -3,198 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Controle de Fechamento - Registro de Marcas</title>
+    <title>Controle de Fechamento | Registro de Marcas</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar Menu -->
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader">
+            <svg class="loader-circle" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#1a237e" stroke-width="8" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="75">
+                    <animate attributeName="stroke-dashoffset" from="283" to="75" dur="2s" repeatCount="indefinite" />
+                </circle>
+            </svg>
+            <div class="loader-logo">CF</div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Premium -->
         <aside class="sidebar">
-            <div class="logo">
-                <h1>📊 Controle de Fechamento</h1>
-                <p>Registro de Marcas</p>
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Controle<span>Pro</span></h1>
+                        <p>Registro de Marcas</p>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
             </div>
-            
-            <nav class="menu">
-                <button class="menu-item active" onclick="showPage('dashboard')">
-                    <span class="icon">📈</span>
-                    <span>Dashboard</span>
-                </button>
-                <button class="menu-item" onclick="showPage('planilha')">
-                    <span class="icon">📝</span>
-                    <span>Planilha de Fechamentos</span>
-                </button>
-                <button class="menu-item" onclick="showPage('historico')">
-                    <span class="icon">📁</span>
-                    <span>Histórico Mensal</span>
-                </button>
+
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="user-info">
+                    <h3>Administrador</h3>
+                    <span class="status-badge online">Online</span>
+                </div>
+            </div>
+
+            <nav class="main-menu">
+                <div class="menu-section">
+                    <span class="menu-label">PRINCIPAL</span>
+                    <button class="menu-item active" onclick="showPage('dashboard', this)">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                        <span class="menu-badge" id="badgeTotal">0</span>
+                    </button>
+                    <button class="menu-item" onclick="showPage('planilha', this)">
+                        <i class="fas fa-table"></i>
+                        <span>Fechamentos</span>
+                        <span class="menu-badge new" id="badgeNew">Novo</span>
+                    </button>
+                </div>
+                
+                <div class="menu-section">
+                    <span class="menu-label">ANÁLISES</span>
+                    <button class="menu-item" onclick="showPage('historico', this)">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Histórico Mensal</span>
+                    </button>
+                    <button class="menu-item" onclick="showPage('relatorios', this)">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Relatórios</span>
+                    </button>
+                    <button class="menu-item" onclick="showPage('metas', this)">
+                        <i class="fas fa-bullseye"></i>
+                        <span>Metas</span>
+                    </button>
+                </div>
+
+                <div class="menu-section">
+                    <span class="menu-label">CONFIGURAÇÕES</span>
+                    <button class="menu-item" onclick="showPage('configuracoes', this)">
+                        <i class="fas fa-cog"></i>
+                        <span>Configurações</span>
+                    </button>
+                    <button class="menu-item" onclick="exportarDados()">
+                        <i class="fas fa-download"></i>
+                        <span>Exportar Dados</span>
+                    </button>
+                </div>
             </nav>
-            
-            <div class="menu-footer">
-                <p>© 2024 Sistema Fechamento</p>
+
+            <div class="sidebar-footer">
+                <div class="upgrade-card">
+                    <i class="fas fa-crown"></i>
+                    <div>
+                        <h4>Versão Pro</h4>
+                        <p>Recursos ilimitados</p>
+                    </div>
+                </div>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Dashboard Page -->
-            <div id="dashboard-page" class="page active">
-                <div class="page-header">
-                    <h2>Dashboard Comparativo Mensal</h2>
-                    <div class="header-actions">
-                        <select id="mes-dashboard" class="select-input">
-                            <option value="">Selecionar Mês</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-icon">💰</span>
-                            <h3>Total de Fechamentos</h3>
-                        </div>
-                        <p class="stat-number" id="total-fechamentos">0</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-icon">✅</span>
-                            <h3>Pagos e Assinados</h3>
-                        </div>
-                        <p class="stat-number" id="pagos-assinados">0</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-icon">📋</span>
-                            <h3>Apenas Assinados</h3>
-                        </div>
-                        <p class="stat-number" id="apenas-assinados">0</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-icon">⭐</span>
-                            <h3>Melhor Vendedora</h3>
-                        </div>
-                        <p class="stat-name" id="melhor-vendedora">-</p>
-                    </div>
-                </div>
-                
-                <div class="chart-container">
-                    <h3>Comparativo de Vendedoras</h3>
-                    <div class="chart" id="vendedoras-chart"></div>
-                </div>
-                
-                <div class="chart-container">
-                    <h3>Desempenho por Horário</h3>
-                    <div class="chart" id="horario-chart"></div>
-                </div>
-            </div>
-
-            <!-- Planilha Page -->
-            <div id="planilha-page" class="page">
-                <div class="page-header">
-                    <h2>Registro de Fechamentos</h2>
-                    <button class="btn-add" onclick="abrirModalNovoFechamento()">
-                        <span>+</span> Novo Fechamento
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="btn-icon" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
                     </button>
+                    <div class="breadcrumb">
+                        <span id="currentPage">Dashboard</span>
+                        <i class="fas fa-chevron-right"></i>
+                        <span class="current">Visão Geral</span>
+                    </div>
                 </div>
-                
-                <div class="filtros">
-                    <select id="filtro-mes" class="select-input" onchange="filtrarFechamentos()">
-                        <option value="">Todos os Meses</option>
-                    </select>
-                    <select id="filtro-vendedora" class="select-input" onchange="filtrarFechamentos()">
-                        <option value="">Todas as Vendedoras</option>
-                    </select>
-                    <input type="text" id="filtro-busca" class="text-input" placeholder="Buscar..." onkeyup="filtrarFechamentos()">
-                </div>
-                
-                <div class="table-container">
-                    <table id="tabela-fechamentos">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Vendedora</th>
-                                <th>Horário</th>
-                                <th>Cliente</th>
-                                <th>Marca</th>
-                                <th>Status</th>
-                                <th>Valor</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-fechamentos">
-                            <!-- Dados serão inseridos via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Histórico Page -->
-            <div id="historico-page" class="page">
-                <div class="page-header">
-                    <h2>Arquivo Mensal</h2>
-                    <button class="btn-add" onclick="exportarDados()">
-                        <span>📥</span> Exportar Dados
+                <div class="top-bar-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar fechamentos..." id="globalSearch" onkeyup="buscaGlobal()">
+                    </div>
+                    <button class="btn-icon notification" onclick="mostrarNotificacoes()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
                     </button>
+                    <button class="btn-icon" onclick="alternarTema()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-menu">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%231a237e'/%3E%3Ctext x='20' y='25' text-anchor='middle' fill='white' font-size='16'%3EA%3C/text%3E%3C/svg%3E" alt="User">
+                    </div>
                 </div>
-                
-                <div class="pastas-grid" id="pastas-mensais">
-                    <!-- Pastas serão geradas via JavaScript -->
+            </header>
+
+            <!-- Page Container -->
+            <div class="page-container">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-content active">
+                    <!-- Header Dashboard -->
+                    <div class="dashboard-header">
+                        <div class="header-content">
+                            <h2>Dashboard de Desempenho</h2>
+                            <p>Acompanhe os resultados em tempo real</p>
+                        </div>
+                        <div class="header-actions">
+                            <div class="period-selector">
+                                <button class="period-btn active" onclick="mudarPeriodo('mes', this)">Mês</button>
+                                <button class="period-btn" onclick="mudarPeriodo('semana', this)">Semana</button>
+                                <button class="period-btn" onclick="mudarPeriodo('hoje', this)">Hoje</button>
+                            </div>
+                            <select id="mesDashboard" class="select-custom" onchange="atualizarDashboard()">
+                                <option value="">Mês Atual</option>
+                            </select>
+                            <button class="btn-refresh" onclick="atualizarDashboard()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cards de Métricas -->
+                    <div class="metrics-grid">
+                        <div class="metric-card primary">
+                            <div class="metric-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total de Fechamentos</span>
+                                <h3 class="metric-value" id="totalFechamentos">0</h3>
+                                <span class="metric-trend positive" id="trendTotal">
+                                    <i class="fas fa-arrow-up"></i> 0%
+                                </span>
+                            </div>
+                            <div class="metric-chart">
+                                <svg viewBox="0 0 100 30">
+                                    <path d="M0,20 Q10,5 20,15 T40,10 T60,15 T80,5 T100,10" fill="none" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="metric-card success">
+                            <div class="metric-icon">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Pagos e Assinados</span>
+                                <h3 class="metric-value" id="pagosAssinados">0</h3>
+                                <span class="metric-trend positive" id="trendPagos">
+                                    <i class="fas fa-arrow-up"></i> 0%
+                                </span>
+                            </div>
+                            <div class="progress-ring">
+                                <svg viewBox="0 0 36 36">
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e0e0e0" stroke-width="3"/>
+                                    <path id="progressPagos" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="0, 100"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="metric-card warning">
+                            <div class="metric-icon">
+                                <i class="fas fa-file-signature"></i>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Apenas Assinados</span>
+                                <h3 class="metric-value" id="apenasAssinados">0</h3>
+                                <span class="metric-trend negative" id="trendAssinados">
+                                    <i class="fas fa-arrow-down"></i> 0%
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card info">
+                            <div class="metric-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Melhor Vendedora</span>
+                                <h3 class="metric-value name" id="melhorVendedora">-</h3>
+                                <span class="metric-subtitle" id="vendasMelhor">0 vendas</span>
+                            </div>
+                            <div class="metric-medal">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="chart-card large">
+                            <div class="chart-header">
+                                <h3>Comparativo de Vendedoras</h3>
+                                <div class="chart-actions">
+                                    <button class="btn-chart-action active">Barras</button>
+                                    <button class="btn-chart-action">Linhas</button>
+                                </div>
+                            </div>
+                            <div class="chart-body" id="chartVendedoras">
+                                <canvas id="canvasVendedoras"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Status dos Fechamentos</h3>
+                            </div>
+                            <div class="chart-body" id="chartStatus">
+                                <div class="donut-chart">
+                                    <svg viewBox="0 0 200 200">
+                                        <circle cx="100" cy="100" r="70" fill="none" stroke="#e0e0e0" stroke-width="30"/>
+                                        <circle id="donutPagos" cx="100" cy="100" r="70" fill="none" stroke="#4caf50" stroke-width="30" stroke-dasharray="0 440" transform="rotate(-90 100 100)"/>
+                                    </svg>
+                                    <div class="donut-center">
+                                        <span class="donut-value" id="donutPercent">0%</span>
+                                        <span class="donut-label">Conversão</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabela Recente -->
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3>Últimos Fechamentos</h3>
+                            <button class="btn-outline" onclick="showPage('planilha', document.querySelector('[onclick*=\"planilha\"]'))">
+                                Ver Todos <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Vendedora</th>
+                                        <th>Cliente</th>
+                                        <th>Status</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaRecentes">
+                                    <!-- Dados via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Planilha Page -->
+                <div id="planilha-page" class="page-content">
+                    <div class="page-header-custom">
+                        <div>
+                            <h2>Registro de Fechamentos</h2>
+                            <p>Gerencie todos os fechamentos de registro de marcas</p>
+                        </div>
+                        <button class="btn-primary" onclick="abrirModalFechamento()">
+                            <i class="fas fa-plus"></i> Novo Fechamento
+                        </button>
+                    </div>
+
+                    <!-- Filtros Avançados -->
+                    <div class="filters-card">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label><i class="fas fa-calendar"></i> Período</label>
+                                <div class="date-range">
+                                    <input type="date" id="filtroDataInicio" class="filter-input" onchange="aplicarFiltros()">
+                                    <span>até</span>
+                                    <input type="date" id="filtroDataFim" class="filter-input" onchange="aplicarFiltros()">
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-user"></i> Vendedora</label>
+                                <select id="filtroVendedora" class="filter-select" onchange="aplicarFiltros()">
+                                    <option value="">Todas</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-tag"></i> Status</label>
+                                <select id="filtroStatus" class="filter-select" onchange="aplicarFiltros()">
+                                    <option value="">Todos</option>
+                                    <option value="Pago e Assinado">Pago e Assinado</option>
+                                    <option value="Apenas Assinado">Apenas Assinado</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-search"></i> Busca</label>
+                                <input type="text" id="filtroBusca" class="filter-input" placeholder="Buscar..." onkeyup="aplicarFiltros()">
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-text" onclick="limparFiltros()">
+                                <i class="fas fa-times"></i> Limpar Filtros
+                            </button>
+                            <span class="filter-count" id="contadorFiltros">0 resultados</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabela Principal -->
+                    <div class="table-card full">
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" onchange="selecionarTodos()"></th>
+                                        <th>Data <i class="fas fa-sort"></i></th>
+                                        <th>Vendedora</th>
+                                        <th>Horário</th>
+                                        <th>Cliente</th>
+                                        <th>Marca</th>
+                                        <th>Status</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaFechamentos">
+                                    <!-- Dados via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-footer">
+                            <div class="table-info">
+                                Mostrando <span id="mostrandoDe">0</span> de <span id="totalRegistros">0</span> registros
+                            </div>
+                            <div class="pagination">
+                                <button class="btn-page" disabled><i class="fas fa-chevron-left"></i></button>
+                                <button class="btn-page active">1</button>
+                                <button class="btn-page">2</button>
+                                <button class="btn-page">3</button>
+                                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Histórico Page -->
+                <div id="historico-page" class="page-content">
+                    <div class="page-header-custom">
+                        <div>
+                            <h2>Arquivo Mensal</h2>
+                            <p>Organize seus fechamentos por período</p>
+                        </div>
+                        <button class="btn-primary" onclick="exportarDados()">
+                            <i class="fas fa-download"></i> Exportar Todos
+                        </button>
+                    </div>
+                    <div class="folders-grid" id="pastasMensais">
+                        <!-- Pastas via JS -->
+                    </div>
+                </div>
+
+                <!-- Relatórios Page -->
+                <div id="relatorios-page" class="page-content">
+                    <h2>Relatórios Detalhados</h2>
+                    <!-- Conteúdo futuro -->
+                </div>
+
+                <!-- Metas Page -->
+                <div id="metas-page" class="page-content">
+                    <h2>Metas de Vendas</h2>
+                    <!-- Conteúdo futuro -->
+                </div>
+
+                <!-- Configurações Page -->
+                <div id="configuracoes-page" class="page-content">
+                    <h2>Configurações</h2>
+                    <!-- Conteúdo futuro -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal para Novo Fechamento -->
-    <div id="modal-fechamento" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Novo Fechamento</h3>
-                <button class="close-modal" onclick="fecharModal()">×</button>
+    <!-- Modal Premium de Fechamento -->
+    <div class="modal-overlay" id="modalFechamento">
+        <div class="modal-premium">
+            <div class="modal-header-premium">
+                <div class="modal-title-area">
+                    <div class="modal-icon-circle">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalTitle">Novo Fechamento</h3>
+                        <p>Preencha todos os dados do registro</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="fecharModalFechamento()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <form id="form-fechamento" onsubmit="salvarFechamento(event)">
-                <div class="form-group">
-                    <label>Data do Fechamento</label>
-                    <input type="date" id="input-data" required class="form-input">
+            
+            <form id="formFechamento" class="modal-form" onsubmit="salvarFechamento(event)">
+                <div class="form-steps">
+                    <div class="step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span>Dados Básicos</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span>Detalhes</span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Vendedora</label>
-                    <input type="text" id="input-vendedora" required class="form-input" placeholder="Nome da vendedora">
+
+                <div class="form-grid">
+                    <div class="form-group floating">
+                        <input type="date" id="inputData" required class="form-control">
+                        <label>Data do Fechamento</label>
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    
+                    <div class="form-group floating">
+                        <input type="text" id="inputVendedora" required class="form-control" placeholder=" ">
+                        <label>Nome da Vendedora</label>
+                        <i class="fas fa-user"></i>
+                    </div>
+                    
+                    <div class="form-group floating">
+                        <input type="time" id="inputHorario" required class="form-control">
+                        <label>Horário da Venda</label>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    
+                    <div class="form-group floating">
+                        <input type="text" id="inputCliente" required class="form-control" placeholder=" ">
+                        <label>Nome do Cliente</label>
+                        <i class="fas fa-building"></i>
+                    </div>
+                    
+                    <div class="form-group floating">
+                        <input type="text" id="inputMarca" required class="form-control" placeholder=" ">
+                        <label>Marca Registrada</label>
+                        <i class="fas fa-trademark"></i>
+                    </div>
+                    
+                    <div class="form-group floating">
+                        <select id="inputStatus" required class="form-control">
+                            <option value="">Selecione...</option>
+                            <option value="Pago e Assinado">Pago e Assinado</option>
+                            <option value="Apenas Assinado">Apenas Assinado</option>
+                        </select>
+                        <label>Status</label>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    
+                    <div class="form-group floating">
+                        <input type="number" id="inputValor" required class="form-control" placeholder=" " step="0.01" min="0">
+                        <label>Valor (R$)</label>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>Observações</label>
+                        <textarea id="inputObservacoes" class="form-control" rows="3" placeholder="Observações adicionais..."></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Horário da Venda</label>
-                    <input type="time" id="input-horario" required class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Nome do Cliente</label>
-                    <input type="text" id="input-cliente" required class="form-input" placeholder="Nome do cliente">
-                </div>
-                <div class="form-group">
-                    <label>Marca Registrada</label>
-                    <input type="text" id="input-marca" required class="form-input" placeholder="Nome da marca">
-                </div>
-                <div class="form-group">
-                    <label>Status do Fechamento</label>
-                    <select id="input-status" required class="form-input">
-                        <option value="">Selecionar Status</option>
-                        <option value="Pago e Assinado">Pago e Assinado</option>
-                        <option value="Apenas Assinado">Apenas Assinado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Valor (R$)</label>
-                    <input type="number" id="input-valor" required class="form-input" placeholder="0.00" step="0.01" min="0">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar Fechamento</button>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="fecharModalFechamento()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Salvar Fechamento
+                    </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de Notificações -->
+    <div class="notifications-panel" id="notificationsPanel">
+        <div class="notifications-header">
+            <h3>Notificações</h3>
+            <button class="btn-text">Marcar todas como lidas</button>
+        </div>
+        <div class="notifications-list">
+            <div class="notification-item unread">
+                <div class="notification-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="notification-content">
+                    <p>Novo fechamento registrado</p>
+                    <span>Há 5 minutos</span>
+                </div>
+            </div>
+            <div class="notification-item unread">
+                <div class="notification-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="notification-content">
+                    <p>Meta mensal: 75% alcançada</p>
+                    <span>Há 1 hora</span>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon info">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="notification-content">
+                    <p>Backup automático realizado</p>
+                    <span>Há 3 horas</span>
+                </div>
+            </div>
         </div>
     </div>
 
