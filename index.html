@@ -466,6 +466,25 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(201, 168, 76, 0.3);
         }
+        .btn-gold-outline {
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-md);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .btn-gold-outline:hover {
+            background: var(--gold-bg);
+            box-shadow: var(--shadow-gold);
+        }
         .btn-outline {
             padding: 9px 18px; background: transparent;
             border: 1px solid var(--border-color);
@@ -492,6 +511,8 @@
         .section-head {
             display: flex; justify-content: space-between;
             align-items: center; margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .section-head h3 {
             font-size: 22px; font-weight: 700;
@@ -595,6 +616,30 @@
         }
 
         /* ========== ARQUIVOS GRID ========== */
+        .file-actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .backup-info {
+            margin-bottom: 20px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+        .backup-info i {
+            color: var(--gold);
+        }
+        .file-input-hidden {
+            display: none;
+        }
         .arq-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -606,11 +651,42 @@
             border-radius: var(--radius-lg);
             padding: 22px; cursor: pointer;
             transition: var(--transition);
+            position: relative;
         }
         .arq-card:hover {
             border-color: var(--gold);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+        .arq-card .arq-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .arq-card:hover .arq-actions {
+            opacity: 1;
+        }
+        .arq-card .arq-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .arq-card .arq-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
         }
         .arq-card .icon-folder {
             font-size: 38px; margin-bottom: 14px;
@@ -697,6 +773,57 @@
             margin-top: 10px;
         }
 
+        /* ========== CONFIRM MODAL ========== */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .confirm-dialog {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: var(--shadow-xl);
+        }
+        .confirm-dialog i {
+            font-size: 48px;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+        .confirm-dialog h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+        .confirm-dialog p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 24px;
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         /* ========== TOAST ========== */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
@@ -732,6 +859,8 @@
             .filter-bar { flex-direction: column; }
             .topbar { padding: 12px 16px; }
             .content-area { padding: 16px; }
+            .section-head { flex-direction: column; align-items: flex-start; }
+            .file-actions-bar { flex-direction: column; }
         }
     </style>
 </head>
@@ -775,11 +904,7 @@
             </button>
             <button class="nav-item" data-page="arquivos">
                 <span class="nav-icon"><i class="fas fa-archive"></i></span>
-                <span>Arquivo Mensal</span>
-            </button>
-            <button class="nav-item" data-page="relatorios">
-                <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
-                <span>Relatórios</span>
+                <span>Arquivos</span>
             </button>
         </nav>
         <div class="sidebar-footer">
@@ -938,9 +1063,14 @@
             <div class="page-panel" id="panel-fechamentos">
                 <div class="section-head">
                     <h3>Gestão de Fechamentos</h3>
-                    <button class="btn-gold" onclick="openModal()">
-                        <i class="fas fa-plus"></i> Novo Fechamento
-                    </button>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-gold" onclick="openModal()">
+                            <i class="fas fa-plus"></i> Novo Fechamento
+                        </button>
+                        <button class="btn-gold-outline" onclick="exportarExcel()">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
                 </div>
 
                 <div class="filter-bar">
@@ -1005,23 +1135,39 @@
             <div class="page-panel" id="panel-arquivos">
                 <div class="section-head">
                     <h3>Arquivo Mensal</h3>
-                    <button class="btn-gold" onclick="exportarDados()">
-                        <i class="fas fa-download"></i> Exportar Dados
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-gold-outline" onclick="importarDados()">
+                            <i class="fas fa-upload"></i> Importar
+                        </button>
+                        <button class="btn-gold" onclick="exportarDados()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="file-actions-bar">
+                    <button class="btn-gold" onclick="fazerBackup()">
+                        <i class="fas fa-save"></i> Fazer Backup
+                    </button>
+                    <button class="btn-gold-outline" onclick="restaurarBackup()">
+                        <i class="fas fa-undo"></i> Restaurar Backup
+                    </button>
+                    <button class="btn-outline" onclick="exportarExcel()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button class="btn-outline danger" onclick="limparDados()">
+                        <i class="fas fa-trash-alt"></i> Limpar Dados
                     </button>
                 </div>
-                <div class="arq-grid" id="arquivosGrid"></div>
-            </div>
 
-            <!-- RELATÓRIOS -->
-            <div class="page-panel" id="panel-relatorios">
-                <div class="section-head">
-                    <h3>Relatórios Executivos</h3>
+                <div class="backup-info" id="backupInfo">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Último backup: <strong id="ultimoBackup">Nunca</strong></span>
                 </div>
-                <div style="text-align:center;padding:80px 20px;color:var(--text-tertiary);">
-                    <i class="fas fa-chart-bar" style="font-size:64px;margin-bottom:20px;opacity:0.4;"></i>
-                    <h4 style="color:var(--text-white);margin-bottom:8px;">Módulo de Relatórios</h4>
-                    <p>Em desenvolvimento</p>
-                </div>
+
+                <div class="arq-grid" id="arquivosGrid"></div>
+
+                <input type="file" id="fileInput" class="file-input-hidden" accept=".json" onchange="carregarArquivo(event)">
             </div>
 
         </div>
@@ -1089,7 +1235,7 @@
 <script>
 // ============================================
 // CONTROLE PRO - EXECUTIVE SUITE v3.0
-// JavaScript Completo
+// JavaScript Completo com Gerenciamento de Arquivos
 // ============================================
 
 (function() {
@@ -1122,8 +1268,17 @@
         // Update date
         updateDate();
 
+        // Update backup info
+        updateBackupInfo();
+
         // Render all
         renderAll();
+
+        // Auto-backup a cada 30 segundos
+        setInterval(autoBackup, 30000);
+
+        // Backup ao fechar a página
+        window.addEventListener('beforeunload', autoBackup);
     }
 
     // ========== DATA ==========
@@ -1138,7 +1293,21 @@
                 loadDemoData();
             }
         } else {
-            loadDemoData();
+            // Tentar recuperar do backup automático
+            const autoBackupData = localStorage.getItem('cf_auto_backup');
+            if (autoBackupData) {
+                try {
+                    const parsed = JSON.parse(autoBackupData);
+                    data = parsed.data || [];
+                    nextId = parsed.nextId || 1;
+                    saveData();
+                    showToast('Dados recuperados do backup automático!', 'success');
+                } catch(e) {
+                    loadDemoData();
+                }
+            } else {
+                loadDemoData();
+            }
         }
     }
 
@@ -1161,6 +1330,33 @@
 
     function saveData() {
         localStorage.setItem('cf_exec_v3', JSON.stringify({ data, nextId }));
+        autoBackup();
+        updateBackupInfo();
+    }
+
+    // ========== AUTO BACKUP ==========
+    function autoBackup() {
+        const backup = {
+            data: data,
+            nextId: nextId,
+            dataBackup: new Date().toISOString(),
+            autoBackup: true,
+            versao: '3.0'
+        };
+        localStorage.setItem('cf_auto_backup', JSON.stringify(backup));
+        localStorage.setItem('cf_last_backup', new Date().toISOString());
+    }
+
+    function updateBackupInfo() {
+        const lastBackup = localStorage.getItem('cf_last_backup');
+        const el = document.getElementById('ultimoBackup');
+        if (lastBackup) {
+            const date = new Date(lastBackup);
+            el.textContent = date.toLocaleDateString('pt-BR') + ' às ' + 
+                            date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        } else {
+            el.textContent = 'Nunca';
+        }
     }
 
     // ========== NAVIGATION ==========
@@ -1172,41 +1368,35 @@
         });
     }
 
-    function navigateTo(page) {
-        // Update nav
+    window.navigateTo = function(page) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.toggle('active', item.dataset.page === page);
         });
 
-        // Update panels
         document.querySelectorAll('.page-panel').forEach(panel => {
             panel.classList.remove('active');
         });
         const panel = document.getElementById(`panel-${page}`);
         if (panel) panel.classList.add('active');
 
-        // Update title
         const titles = {
             dashboard: 'Dashboard Executivo',
             fechamentos: 'Gestão de Fechamentos',
             vendedoras: 'Desempenho das Vendedoras',
-            arquivos: 'Arquivo Mensal',
-            relatorios: 'Relatórios Executivos'
+            arquivos: 'Arquivo Mensal'
         };
         const subtitles = {
             dashboard: 'Visão geral de desempenho',
             fechamentos: 'Gerencie todos os registros',
             vendedoras: 'Análise individual',
-            arquivos: 'Histórico por período',
-            relatorios: 'Relatórios detalhados'
+            arquivos: 'Histórico por período'
         };
 
         document.getElementById('pageTitle').textContent = titles[page] || page;
         document.getElementById('pageSubtitle').textContent = subtitles[page] || '';
 
-        // Render specific page
         renderPage(page);
-    }
+    };
 
     function renderPage(page) {
         switch(page) {
@@ -1236,12 +1426,10 @@
         const pagos = data.filter(f => f.status === 'Pago e Assinado').length;
         const assinados = data.filter(f => f.status === 'Apenas Assinado').length;
 
-        // Animate KPIs
         animateNumber('kpiTotal', total);
         animateNumber('kpiPagos', pagos);
         animateNumber('kpiAssinados', assinados);
 
-        // Melhor vendedora
         const vendedoras = {};
         data.forEach(f => {
             if (!vendedoras[f.vendedora]) vendedoras[f.vendedora] = 0;
@@ -1256,18 +1444,15 @@
         document.getElementById('kpiMelhor').textContent = melhor.nome;
         document.getElementById('kpiVendasMelhor').textContent = `${melhor.qtd} fechamentos`;
 
-        // Chart vendedoras
         renderBarChart(vendedoras);
 
-        // Donut
         const pct = total > 0 ? Math.round((pagos / total) * 100) : 0;
-        const circ = 2 * Math.PI * 62; // r=62
+        const circ = 2 * Math.PI * 62;
         const dashoffset = circ - (pct / 100) * circ;
         document.getElementById('donutArc').setAttribute('stroke-dasharray', `${circ} ${circ}`);
         document.getElementById('donutArc').setAttribute('stroke-dashoffset', -dashoffset);
         document.getElementById('donutPct').textContent = `${pct}%`;
 
-        // Tabela recente
         renderTabelaRecente();
     }
 
@@ -1355,25 +1540,23 @@
         const s = document.getElementById('filtroStatus').value;
 
         let filtered = [...data];
-
         if (di) filtered = filtered.filter(f => f.data >= di);
         if (df) filtered = filtered.filter(f => f.data <= df);
         if (v) filtered = filtered.filter(f => f.vendedora === v);
         if (s) filtered = filtered.filter(f => f.status === s);
-
         filtered.sort((a, b) => new Date(b.data) - new Date(a.data));
 
         renderTabelaFechamentos(filtered);
         document.getElementById('registrosInfo').textContent = `${filtered.length} registro(s)`;
     }
 
-    function clearFilters() {
+    window.clearFilters = function() {
         document.getElementById('filtroDataInicio').value = '';
         document.getElementById('filtroDataFim').value = '';
         document.getElementById('filtroVendedora').value = '';
         document.getElementById('filtroStatus').value = '';
         applyFilters();
-    }
+    };
 
     function renderFechamentos() {
         populateVendedoraFilter();
@@ -1382,7 +1565,6 @@
 
     function renderTabelaFechamentos(items) {
         const tbody = document.getElementById('tabelaFechamentos');
-
         if (items.length === 0) {
             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#64748b;">Nenhum fechamento encontrado</td></tr>';
             return;
@@ -1575,9 +1757,14 @@
                 const pagos = items.filter(i => i.status === 'Pago e Assinado').length;
 
                 return `
-                    <div class="arq-card" onclick="openArquivo('${mes}')">
-                        <div class="icon-folder">📁</div>
-                        <h5>${nome} ${ano}</h5>
+                    <div class="arq-card">
+                        <div class="arq-actions">
+                            <button class="arq-btn" onclick="event.stopPropagation(); exportarMes('${mes}')" title="Exportar mês">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                        <div class="icon-folder" onclick="openArquivo('${mes}')">📁</div>
+                        <h5 onclick="openArquivo('${mes}')">${nome} ${ano}</h5>
                         <div class="info">${items.length} fechamentos</div>
                         <div class="info" style="color:#10b981;margin-top:2px;"><strong>R$ ${valor.toFixed(2)}</strong></div>
                         <div class="info">${pagos} pagos e assinados</div>
@@ -1626,6 +1813,11 @@
                             </div>
                         </div>
                     </div>
+                    <div style="display:flex;gap:10px;margin-bottom:16px;">
+                        <button class="btn-gold-outline" style="font-size:11px;" onclick="exportarMes('${mes}')">
+                            <i class="fas fa-download"></i> Exportar Mês
+                        </button>
+                    </div>
                     <table class="table-w">
                         <thead>
                             <tr>
@@ -1655,6 +1847,260 @@
         `;
 
         document.body.appendChild(overlay);
+    };
+
+    // ========== GERENCIAMENTO DE ARQUIVOS ==========
+    window.fazerBackup = function() {
+        const backup = {
+            data: data,
+            nextId: nextId,
+            dataBackup: new Date().toISOString(),
+            versao: '3.0'
+        };
+        
+        const json = JSON.stringify(backup, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_fechamentos_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('Backup criado com sucesso!', 'success');
+    };
+
+    window.restaurarBackup = function() {
+        document.getElementById('fileInput').click();
+    };
+
+    window.carregarArquivo = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backup = JSON.parse(e.target.result);
+                
+                if (backup.data && Array.isArray(backup.data)) {
+                    const confirmDiv = document.createElement('div');
+                    confirmDiv.className = 'confirm-modal';
+                    confirmDiv.innerHTML = `
+                        <div class="confirm-dialog">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h4>Restaurar Backup?</h4>
+                            <p>Isso substituirá todos os dados atuais.</p>
+                            <p style="font-size:11px;">${backup.data.length} fechamentos serão restaurados.</p>
+                            <div class="confirm-actions">
+                                <button class="btn-outline" onclick="this.closest('.confirm-modal').remove()">Cancelar</button>
+                                <button class="btn-gold" onclick="confirmarRestauracao(this)">Restaurar</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(confirmDiv);
+                    
+                    confirmDiv.querySelector('.btn-gold').backupData = backup;
+                    
+                    confirmDiv.addEventListener('click', function(e) {
+                        if (e.target === confirmDiv) confirmDiv.remove();
+                    });
+                } else {
+                    showToast('Arquivo inválido!', 'error');
+                }
+            } catch(err) {
+                showToast('Erro ao ler arquivo!', 'error');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    };
+
+    window.confirmarRestauracao = function(btn) {
+        const backup = btn.backupData;
+        data = backup.data;
+        nextId = backup.nextId || Math.max(...data.map(f => f.id), 0) + 1;
+        
+        saveData();
+        renderAll();
+        document.querySelector('.confirm-modal')?.remove();
+        showToast('Backup restaurado com sucesso!', 'success');
+    };
+
+    window.importarDados = function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    const importedData = imported.data || imported;
+                    
+                    if (Array.isArray(importedData)) {
+                        const confirmDiv = document.createElement('div');
+                        confirmDiv.className = 'confirm-modal';
+                        confirmDiv.innerHTML = `
+                            <div class="confirm-dialog">
+                                <i class="fas fa-plus-circle"></i>
+                                <h4>Importar Dados?</h4>
+                                <p>${importedData.length} fechamentos serão adicionados.</p>
+                                <div class="confirm-actions">
+                                    <button class="btn-outline" onclick="this.closest('.confirm-modal').remove()">Cancelar</button>
+                                    <button class="btn-gold" onclick="confirmarImportacao(this)">Importar</button>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(confirmDiv);
+                        
+                        confirmDiv.querySelector('.btn-gold').importData = importedData;
+                        
+                        confirmDiv.addEventListener('click', function(e) {
+                            if (e.target === confirmDiv) confirmDiv.remove();
+                        });
+                    }
+                } catch(err) {
+                    showToast('Erro ao ler arquivo!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    };
+
+    window.confirmarImportacao = function(btn) {
+        const importedData = btn.importData;
+        importedData.forEach(f => {
+            const exists = data.find(x => 
+                x.data === f.data && 
+                x.vendedora === f.vendedora && 
+                x.cliente === f.cliente &&
+                x.marca === f.marca
+            );
+            if (!exists) {
+                data.push({ ...f, id: nextId++ });
+            }
+        });
+        
+        saveData();
+        renderAll();
+        document.querySelector('.confirm-modal')?.remove();
+        showToast('Dados importados!', 'success');
+    };
+
+    window.exportarDados = function() {
+        const backup = {
+            data: data,
+            nextId: nextId,
+            dataExportacao: new Date().toISOString(),
+            totalRegistros: data.length,
+            versao: '3.0'
+        };
+        
+        const json = JSON.stringify(backup, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fechamentos_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('Dados exportados!', 'success');
+    };
+
+    window.exportarExcel = function() {
+        if (data.length === 0) {
+            showToast('Nenhum dado para exportar!', 'error');
+            return;
+        }
+        
+        let csv = '\uFEFFData;Vendedora;Horário;Cliente;Marca;Status;Valor\n';
+        data.forEach(f => {
+            csv += `${formatDate(f.data)};${f.vendedora};${f.horario};${f.cliente};${f.marca};${f.status};R$ ${f.valor.toFixed(2)}\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fechamentos_excel_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('Planilha Excel exportada!', 'success');
+    };
+
+    window.exportarMes = function(mes) {
+        const items = data.filter(f => f.data.startsWith(mes));
+        if (items.length === 0) return;
+        
+        let csv = '\uFEFFData;Vendedora;Horário;Cliente;Marca;Status;Valor\n';
+        items.forEach(f => {
+            csv += `${formatDate(f.data)};${f.vendedora};${f.horario};${f.cliente};${f.marca};${f.status};R$ ${f.valor.toFixed(2)}\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fechamentos_${mes}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('Mês exportado!', 'success');
+    };
+
+    window.limparDados = function() {
+        if (data.length === 0) {
+            showToast('Não há dados para limpar!', 'error');
+            return;
+        }
+        
+        const confirmDiv = document.createElement('div');
+        confirmDiv.className = 'confirm-modal';
+        confirmDiv.innerHTML = `
+            <div class="confirm-dialog">
+                <i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i>
+                <h4>Limpar Todos os Dados?</h4>
+                <p>Esta ação é irreversível!</p>
+                <div class="confirm-actions">
+                    <button class="btn-gold-outline" onclick="fazerBackup(); this.closest('.confirm-modal').remove();">Fazer Backup Primeiro</button>
+                    <button class="btn-outline" onclick="this.closest('.confirm-modal').remove()">Cancelar</button>
+                    <button class="btn-outline danger" onclick="confirmarLimpeza()">Limpar Tudo</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(confirmDiv);
+        
+        confirmDiv.addEventListener('click', function(e) {
+            if (e.target === confirmDiv) confirmDiv.remove();
+        });
+    };
+
+    window.confirmarLimpeza = function() {
+        data = [];
+        nextId = 1;
+        saveData();
+        renderAll();
+        document.querySelector('.confirm-modal')?.remove();
+        showToast('Dados limpos!', 'success');
     };
 
     // ========== UTILS ==========
@@ -1707,18 +2153,6 @@
         return `<span class="status-pill ${cls}">${status}</span>`;
     }
 
-    window.exportarDados = function() {
-        const json = JSON.stringify(data, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `fechamentos_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('Dados exportados!', 'success');
-    };
-
     function showToast(msg, type) {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
@@ -1732,19 +2166,21 @@
         }, 3000);
     }
 
-    // Keyboard shortcut
+    // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.key === 'n') {
             e.preventDefault();
             openModal();
         }
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            fazerBackup();
+        }
         if (e.key === 'Escape') {
             closeModal();
+            document.querySelector('.confirm-modal')?.remove();
         }
     });
-
-    // Expose navigateTo globally
-    window.navigateTo = navigateTo;
 
     // Start!
     init();
