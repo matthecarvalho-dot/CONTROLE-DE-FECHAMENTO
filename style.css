@@ -1613,3 +1613,246 @@ textarea.form-control {
         max-height: 95vh;
     }
 }
+/* ==================== ESTILOS ADICIONAIS ==================== */
+
+/* Toast Notifications */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    z-index: 9999;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid;
+}
+
+.toast-notification.show {
+    transform: translateX(0);
+}
+
+.toast-notification.success {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.toast-notification.error {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.toast-notification.info {
+    border-color: var(--info);
+    color: var(--info);
+}
+
+/* Vendedora Info */
+.vendedora-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-500);
+}
+
+.empty-state i {
+    margin-bottom: 16px;
+}
+
+.empty-state p {
+    margin-bottom: 16px;
+}
+
+/* Valor Cell */
+.valor-cell {
+    font-weight: 600;
+    color: var(--success);
+    font-size: 14px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Chart Bars */
+.chart-bar-item {
+    margin-bottom: 20px;
+}
+
+.chart-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.chart-bar-container {
+    height: 24px;
+    background: var(--gray-100);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.chart-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-lighter));
+    border-radius: 12px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+}
+
+.chart-bar-segment.pagos {
+    background: var(--success);
+    border-radius: 12px;
+}
+
+/* Error State */
+.form-control.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+
+.form-control.error:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.2);
+}
+
+/* Page Dots */
+.page-dots {
+    padding: 8px;
+    color: var(--gray-400);
+}
+
+/* Dark Theme */
+body.dark-theme {
+    background: #1a202c;
+    color: #e2e8f0;
+}
+
+body.dark-theme .main-content {
+    background: #1a202c;
+}
+
+body.dark-theme .top-bar,
+body.dark-theme .metric-card,
+body.dark-theme .chart-card,
+body.dark-theme .table-card,
+body.dark-theme .filters-card,
+body.dark-theme .modal-premium,
+body.dark-theme .folder-card {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+body.dark-theme .metric-value,
+body.dark-theme .chart-header h3,
+body.dark-theme .table-header h3,
+body.dark-theme .folder-name {
+    color: #e2e8f0;
+}
+
+body.dark-theme .metric-label,
+body.dark-theme .table-modern td,
+body.dark-theme .folder-stat {
+    color: #a0aec0;
+}
+
+body.dark-theme .table-modern thead,
+body.dark-theme .modal-header-premium {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+body.dark-theme .table-modern tbody tr:hover {
+    background: #4a5568;
+}
+
+body.dark-theme .filter-input,
+body.dark-theme .filter-select,
+body.dark-theme .form-control {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+}
+
+/* Scrollbar Custom */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.metric-card:hover .metric-icon {
+    animation: pulse 1s infinite;
+}
+
+/* Print Styles */
+@media print {
+    .sidebar,
+    .top-bar,
+    .btn-primary,
+    .btn-secondary,
+    .action-buttons {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .table-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
