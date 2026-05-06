@@ -1,1221 +1,780 @@
-/* ============================================
-   CONTROLE PRO - EXECUTIVE SUITE
-   Design Executivo Premium
-   ============================================ */
+// ============================================
+// CONTROLE PRO - EXECUTIVE SUITE
+// Lógica de Negócio Premium
+// ============================================
 
-:root {
-    --bg-primary: #0a0e17;
-    --bg-secondary: #111827;
-    --bg-tertiary: #1a2332;
-    --bg-card: #151d2b;
-    --border-color: #1e2d3d;
-    --border-light: #253349;
+class ExecutiveSystem {
+    constructor() {
+        this.data = [];
+        this.nextId = 1;
+        this.currentPage = 'dashboard';
+        this.filtros = {
+            dataInicio: '',
+            dataFim: '',
+            vendedora: '',
+            status: ''
+        };
+        
+        this.init();
+    }
     
-    --gold: #c9a84c;
-    --gold-light: #d4b860;
-    --gold-dark: #a8892e;
-    --gold-bg: rgba(201, 168, 76, 0.1);
+    init() {
+        this.loadData();
+        this.setupEventListeners();
+        this.updateDateDisplay();
+        this.renderAll();
+        this.hideSplash();
+    }
     
-    --blue: #3b82f6;
-    --blue-light: #60a5fa;
-    --blue-dark: #2563eb;
+    // ========== SPLASH SCREEN ==========
+    hideSplash() {
+        setTimeout(() => {
+            const splash = document.getElementById('splash');
+            if (splash) {
+                splash.classList.add('hide');
+                setTimeout(() => splash.remove(), 500);
+            }
+        }, 1500);
+    }
     
-    --green: #10b981;
-    --green-light: #34d399;
+    // ========== DATA MANAGEMENT ==========
+    loadData() {
+        const saved = localStorage.getItem('cf_executive_data');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                this.data = parsed.data || [];
+                this.nextId = parsed.nextId || 1;
+            } catch(e) {
+                this.loadDemoData();
+            }
+        } else {
+            this.loadDemoData();
+        }
+    }
     
-    --red: #ef4444;
-    --red-light: #f87171;
+    loadDemoData() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        
+        this.data = [
+            { id: 1, data: `${y}-${m}-03`, vendedora: 'Ana Silva', horario: '14:30', cliente: 'Tech Solutions Ltda', marca: 'TechPro', status: 'Pago e Assinado', valor: 5200 },
+            { id: 2, data: `${y}-${m}-07`, vendedora: 'Maria Oliveira', horario: '10:15', cliente: 'Digital Brands SA', marca: 'InnovaBrand', status: 'Pago e Assinado', valor: 3800 },
+            { id: 3, data: `${y}-${m}-12`, vendedora: 'Carla Santos', horario: '16:45', cliente: 'Global Marcas', marca: 'MarketPlus', status: 'Apenas Assinado', valor: 4500 },
+            { id: 4, data: `${y}-${m}-15`, vendedora: 'Ana Silva', horario: '09:00', cliente: 'Inovação Digital', marca: 'TechStart', status: 'Pago e Assinado', valor: 6100 },
+            { id: 5, data: `${y}-${m}-18`, vendedora: 'Maria Oliveira', horario: '11:30', cliente: 'Comércio Express', marca: 'FastBrand', status: 'Apenas Assinado', valor: 2900 },
+            { id: 6, data: `${y}-${m}-21`, vendedora: 'Carla Santos', horario: '15:00', cliente: 'Mega Store', marca: 'UltraMark', status: 'Pago e Assinado', valor: 7300 },
+        ];
+        this.nextId = 7;
+        this.saveData();
+    }
     
-    --text-primary: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --text-tertiary: #64748b;
-    --text-white: #ffffff;
+    saveData() {
+        localStorage.setItem('cf_executive_data', JSON.stringify({
+            data: this.data,
+            nextId: this.nextId
+        }));
+    }
     
-    --gradient-gold: linear-gradient(135deg, #c9a84c 0%, #f0d070 50%, #c9a84c 100%);
-    --gradient-dark: linear-gradient(180deg, #0a0e17 0%, #111827 100%);
-    --gradient-card: linear-gradient(135deg, #151d2b 0%, #1a2332 100%);
+    // ========== EVENT LISTENERS ==========
+    setupEventListeners() {
+        // Navegação
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const page = item.dataset.page;
+                this.navigateTo(page);
+            });
+        });
+        
+        // Menu toggle
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.querySelector('.exec-main').classList.toggle('expanded');
+        });
+        
+        // Modal
+        document.getElementById('btnNovoFechamento').addEventListener('click', () => this.openModal());
+        document.getElementById('btnCloseModal').addEventListener('click', () => this.closeModal());
+        document.getElementById('btnCancelar').addEventListener('click', () => this.closeModal());
+        document.getElementById('modalFechamento').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) this.closeModal();
+        });
+        
+        // Form submit
+        document.getElementById('formFechamento').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveFechamento();
+        });
+        
+        // Filtros
+        document.getElementById('filtroDataInicio').addEventListener('change', () => this.applyFilters());
+        document.getElementById('filtroDataFim').addEventListener('change', () => this.applyFilters());
+        document.getElementById('filtroVendedora').addEventListener('change', () => this.applyFilters());
+        document.getElementById('filtroStatus').addEventListener('change', () => this.applyFilters());
+        document.getElementById('btnLimparFiltros').addEventListener('click', () => this.clearFilters());
+        
+        // Dashboard period
+        document.getElementById('chartPeriod').addEventListener('change', () => this.renderDashboard());
+        
+        // Export
+        document.getElementById('btnExportar').addEventListener('click', () => this.exportData());
+        
+        // Global search
+        document.getElementById('searchGlobal').addEventListener('input', (e) => {
+            this.globalSearch(e.target.value);
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                this.openModal();
+            }
+            if (e.key === 'Escape') {
+                this.closeModal();
+            }
+        });
+    }
     
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
-    --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
-    --shadow-xl: 0 20px 50px rgba(0,0,0,0.6);
-    --shadow-gold: 0 4px 20px rgba(201,168,76,0.15);
+    // ========== NAVIGATION ==========
+    navigateTo(page) {
+        this.currentPage = page;
+        
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.page === page);
+        });
+        
+        // Update page
+        document.querySelectorAll('.page-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(`page-${page}`).classList.add('active');
+        
+        // Update title
+        const titles = {
+            dashboard: 'Dashboard Executivo',
+            fechamentos: 'Gestão de Fechamentos',
+            vendedoras: 'Desempenho das Vendedoras',
+            arquivos: 'Arquivo Mensal',
+            relatorios: 'Relatórios Executivos'
+        };
+        const subtitles = {
+            dashboard: 'Visão geral de desempenho',
+            fechamentos: 'Gerencie todos os registros',
+            vendedoras: 'Análise individual',
+            arquivos: 'Histórico por período',
+            relatorios: 'Relatórios detalhados'
+        };
+        
+        document.getElementById('pageTitle').textContent = titles[page] || page;
+        document.getElementById('pageSubtitle').textContent = subtitles[page] || '';
+        
+        // Render
+        this.renderPage(page);
+    }
     
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
+    renderPage(page) {
+        switch(page) {
+            case 'dashboard': this.renderDashboard(); break;
+            case 'fechamentos': this.renderFechamentos(); break;
+            case 'vendedoras': this.renderVendedoras(); break;
+            case 'arquivos': this.renderArquivos(); break;
+        }
+    }
     
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.5;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-}
-
-/* ========== SPLASH SCREEN ========== */
-.splash {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--bg-primary);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.5s, visibility 0.5s;
-}
-
-.splash.hide {
-    opacity: 0;
-    visibility: hidden;
-}
-
-.splash-hexagon {
-    width: 80px;
-    height: 80px;
-    background: var(--gradient-gold);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 30px;
-}
-
-.splash-hexagon span {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--bg-primary);
-    letter-spacing: -1px;
-}
-
-.splash-loader {
-    width: 200px;
-    height: 3px;
-    background: var(--bg-tertiary);
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.splash-bar {
-    width: 0%;
-    height: 100%;
-    background: var(--gradient-gold);
-    border-radius: 3px;
-    animation: splashLoad 1.5s ease forwards;
-}
-
-@keyframes splashLoad {
-    0% { width: 0%; }
-    50% { width: 70%; }
-    100% { width: 100%; }
-}
-
-/* ========== LAYOUT ========== */
-.executive-layout {
-    display: flex;
-    min-height: 100vh;
-}
-
-/* ========== SIDEBAR ========== */
-.exec-sidebar {
-    width: 260px;
-    background: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    height: 100vh;
-    z-index: 100;
-    transition: var(--transition);
-}
-
-.exec-sidebar.collapsed {
-    width: 72px;
-}
-
-.sidebar-brand {
-    padding: 24px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.brand-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gold);
-    flex-shrink: 0;
-}
-
-.brand-text {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.brand-name {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: var(--text-white);
-}
-
-.brand-name span {
-    color: var(--gold);
-}
-
-.brand-subtitle {
-    font-size: 10px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.sidebar-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 0 20px;
-}
-
-.exec-nav {
-    flex: 1;
-    padding: 16px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    border: none;
-    background: none;
-    font-family: inherit;
-    width: 100%;
-    text-align: left;
-}
-
-.nav-item:hover {
-    background: var(--bg-tertiary);
-    color: var(--text-white);
-}
-
-.nav-item.active {
-    background: var(--gold-bg);
-    color: var(--gold);
-    font-weight: 600;
-}
-
-.nav-item.active .nav-indicator {
-    position: absolute;
-    left: -12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 24px;
-    background: var(--gold);
-    border-radius: 0 3px 3px 0;
-}
-
-.nav-icon {
-    width: 20px;
-    text-align: center;
-    font-size: 16px;
-}
-
-.nav-count {
-    margin-left: auto;
-    background: var(--bg-tertiary);
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.nav-item.active .nav-count {
-    background: var(--gold);
-    color: var(--bg-primary);
-}
-
-.sidebar-footer-exec {
-    padding: 16px;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.user-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-}
-
-.user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--gradient-gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: var(--bg-primary);
-    font-size: 14px;
-}
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-white);
-}
-
-.user-role {
-    font-size: 11px;
-    color: var(--text-tertiary);
-}
-
-.btn-logout {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    background: transparent;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-logout:hover {
-    border-color: var(--red);
-    color: var(--red);
-    background: rgba(239,68,68,0.1);
-}
-
-/* ========== MAIN ========== */
-.exec-main {
-    flex: 1;
-    margin-left: 260px;
-    transition: var(--transition);
-    min-height: 100vh;
-}
-
-.exec-main.expanded {
-    margin-left: 72px;
-}
-
-/* ========== TOPBAR ========== */
-.exec-topbar {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-}
-
-.topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.btn-menu-toggle {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-menu-toggle:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-}
-
-.page-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-white);
-    letter-spacing: -0.5px;
-}
-
-.page-subtitle {
-    font-size: 12px;
-    color: var(--text-tertiary);
-    margin-top: 2px;
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.search-exec {
-    position: relative;
-}
-
-.search-exec i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-tertiary);
-    font-size: 14px;
-}
-
-.search-exec input {
-    padding: 10px 16px 10px 36px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    color: var(--text-white);
-    font-size: 13px;
-    width: 240px;
-    font-family: inherit;
-    transition: var(--transition);
-}
-
-.search-exec input:focus {
-    outline: none;
-    border-color: var(--gold);
-    box-shadow: var(--shadow-gold);
-}
-
-.search-exec input::placeholder {
-    color: var(--text-tertiary);
-}
-
-.date-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
-.date-display i {
-    color: var(--gold);
-}
-
-.btn-icon-exec {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    background: var(--bg-tertiary);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.btn-icon-exec:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-}
-
-.notification-dot {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 8px;
-    height: 8px;
-    background: var(--gold);
-    border-radius: 50%;
-}
-
-/* ========== CONTENT ========== */
-.exec-content {
-    padding: 32px;
-}
-
-.page-section {
-    display: none;
-    animation: fadeSlideIn 0.4s ease;
-}
-
-.page-section.active {
-    display: block;
-}
-
-@keyframes fadeSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+    renderAll() {
+        this.renderDashboard();
+        this.renderFechamentos();
+        this.renderVendedoras();
+        this.renderArquivos();
+        this.updateNavCount();
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    
+    // ========== DASHBOARD ==========
+    renderDashboard() {
+        const period = document.getElementById('chartPeriod').value;
+        let filteredData = this.getFilteredByPeriod(period);
+        
+        // KPI
+        const total = filteredData.length;
+        const pagos = filteredData.filter(f => f.status === 'Pago e Assinado').length;
+        const assinados = filteredData.filter(f => f.status === 'Apenas Assinado').length;
+        
+        // Melhor vendedora
+        const vendedoras = {};
+        filteredData.forEach(f => {
+            if (!vendedoras[f.vendedora]) vendedoras[f.vendedora] = 0;
+            vendedoras[f.vendedora]++;
+        });
+        
+        let melhor = { nome: '-', qtd: 0 };
+        Object.entries(vendedoras).forEach(([nome, qtd]) => {
+            if (qtd > melhor.qtd) melhor = { nome, qtd };
+        });
+        
+        // Animate KPIs
+        this.animateValue('kpiTotal', total);
+        this.animateValue('kpiPagos', pagos);
+        this.animateValue('kpiAssinados', assinados);
+        document.getElementById('kpiMelhor').textContent = melhor.nome;
+        document.getElementById('kpiVendasMelhor').textContent = `${melhor.qtd} fechamentos`;
+        
+        // Chart Vendedoras
+        this.renderVendedorasChart(vendedoras);
+        
+        // Donut Chart
+        const percentual = total > 0 ? Math.round((pagos / total) * 100) : 0;
+        const circunferencia = 2 * Math.PI * 80; // r=80
+        const dashoffset = circunferencia - (percentual / 100) * circunferencia;
+        
+        document.getElementById('donutProgress').setAttribute('stroke-dasharray', `${circunferencia} ${circunferencia}`);
+        document.getElementById('donutProgress').setAttribute('stroke-dashoffset', -dashoffset);
+        document.getElementById('donutPercent').textContent = `${percentual}%`;
+        
+        // Tabela recente
+        this.renderTabelaRecente();
     }
-}
-
-/* ========== KPI CARDS ========== */
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 32px;
-}
-
-.kpi-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    transition: var(--transition);
-    position: relative;
-}
-
-.kpi-card:hover {
-    border-color: var(--border-light);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.kpi-accent {
-    height: 3px;
-    background: var(--gradient-gold);
-}
-
-.kpi-accent.accent-green {
-    background: linear-gradient(90deg, #10b981, #34d399);
-}
-
-.kpi-accent.accent-yellow {
-    background: linear-gradient(90deg, #c9a84c, #f0d070);
-}
-
-.kpi-accent.accent-blue {
-    background: linear-gradient(90deg, #3b82f6, #60a5fa);
-}
-
-.kpi-body {
-    padding: 20px 24px 16px;
-}
-
-.kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.kpi-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.kpi-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    color: var(--gold);
-    background: var(--gold-bg);
-}
-
-.kpi-value {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--text-white);
-    letter-spacing: -2px;
-    line-height: 1;
-}
-
-.kpi-value.name {
-    font-size: 24px;
-    letter-spacing: -1px;
-}
-
-.kpi-footer {
-    margin-top: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.kpi-change {
-    font-size: 12px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.kpi-change.positive { color: var(--green); }
-.kpi-change.negative { color: var(--red); }
-
-.kpi-period {
-    font-size: 11px;
-    color: var(--text-tertiary);
-}
-
-/* ========== CHARTS ========== */
-.charts-exec-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    margin-bottom: 32px;
-}
-
-.chart-exec-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-}
-
-.chart-exec-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.chart-exec-header h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-white);
-}
-
-.chart-period-select {
-    padding: 8px 14px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.chart-period-select:focus {
-    outline: none;
-    border-color: var(--gold);
-}
-
-.chart-exec-body {
-    min-height: 300px;
-}
-
-/* Chart Bars */
-.bar-exec-item {
-    margin-bottom: 20px;
-}
-
-.bar-exec-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
-.bar-exec-label strong {
-    color: var(--text-white);
-}
-
-.bar-exec-track {
-    height: 28px;
-    background: var(--bg-tertiary);
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-.bar-exec-fill {
-    height: 100%;
-    background: var(--gradient-gold);
-    border-radius: 14px;
-    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--bg-primary);
-    min-width: 40px;
-}
-
-/* Donut Exec */
-.donut-exec {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    margin: 0 auto 24px;
-}
-
-.donut-center-exec {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-}
-
-.donut-percent {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--gold);
-    display: block;
-}
-
-.donut-text {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.legend-exec {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.legend-color {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-/* ========== TABELA EXECUTIVA ========== */
-.table-exec-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-}
-
-.table-exec-card.full {
-    margin-top: 0;
-}
-
-.table-exec-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.table-exec-header h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-white);
-}
-
-.table-exec {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table-exec thead {
-    background: var(--bg-tertiary);
-}
-
-.table-exec th {
-    padding: 14px 20px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-tertiary);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.table-exec td {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
-.table-exec tbody tr {
-    transition: var(--transition);
-}
-
-.table-exec tbody tr:hover {
-    background: rgba(255,255,255,0.02);
-}
-
-.table-exec-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border-color);
-    font-size: 12px;
-    color: var(--text-tertiary);
-}
-
-/* Botões Executivos */
-.btn-exec-primary {
-    padding: 12px 24px;
-    background: var(--gradient-gold);
-    border: none;
-    border-radius: var(--radius-md);
-    color: var(--bg-primary);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: var(--shadow-gold);
-}
-
-.btn-exec-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(201,168,76,0.25);
-}
-
-.btn-exec-outline {
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-exec-outline:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-}
-
-.btn-exec-text {
-    background: none;
-    border: none;
-    color: var(--text-tertiary);
-    font-size: 13px;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: var(--transition);
-}
-
-.btn-exec-text:hover {
-    color: var(--text-white);
-}
-
-.btn-exec-secondary {
-    padding: 12px 24px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    transition: var(--transition);
-}
-
-.btn-exec-secondary:hover {
-    border-color: var(--text-tertiary);
-    color: var(--text-white);
-}
-
-/* Status Badges */
-.badge-exec {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.badge-exec::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-}
-
-.badge-exec.pago {
-    background: rgba(16,185,129,0.15);
-    color: var(--green);
-}
-
-.badge-exec.pago::before {
-    background: var(--green);
-}
-
-.badge-exec.assinado {
-    background: rgba(201,168,76,0.15);
-    color: var(--gold);
-}
-
-.badge-exec.assinado::before {
-    background: var(--gold);
-}
-
-/* Section Header */
-.section-header-exec {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.section-header-exec h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-white);
-    letter-spacing: -0.5px;
-}
-
-/* Filtros Bar */
-.filters-exec-bar {
-    display: flex;
-    gap: 16px;
-    align-items: flex-end;
-    padding: 20px 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.filter-exec-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filter-exec-group label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.filter-separator {
-    color: var(--text-tertiary);
-    font-size: 12px;
-}
-
-.input-exec {
-    padding: 10px 14px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    color: var(--text-white);
-    font-size: 13px;
-    font-family: inherit;
-    transition: var(--transition);
-}
-
-.input-exec:focus {
-    outline: none;
-    border-color: var(--gold);
-    box-shadow: var(--shadow-gold);
-}
-
-select.input-exec {
-    cursor: pointer;
-}
-
-/* ========== MODAL EXECUTIVO ========== */
-.modal-exec-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(8px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-exec-overlay.active {
-    display: flex;
-}
-
-.modal-exec {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-xl);
-    animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
+    
+    getFilteredByPeriod(period) {
+        const now = new Date();
+        let startDate;
+        
+        switch(period) {
+            case 'trimestre':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+                break;
+            case 'ano':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                break;
+            case 'mes':
+            default:
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        }
+        
+        return this.data.filter(f => {
+            const d = new Date(f.data + 'T00:00:00');
+            return d >= startDate;
+        });
     }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    
+    animateValue(elementId, target) {
+        const el = document.getElementById(elementId);
+        const start = parseInt(el.textContent) || 0;
+        const duration = 800;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+            
+            el.textContent = Math.floor(start + (target - start) * eased);
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                el.textContent = target;
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+    
+    renderVendedorasChart(vendedoras) {
+        const container = document.getElementById('chartVendedoras');
+        const max = Math.max(...Object.values(vendedoras), 1);
+        
+        const sorted = Object.entries(vendedoras).sort((a, b) => b[1] - a[1]);
+        
+        if (sorted.length === 0) {
+            container.innerHTML = `<div style="text-align:center;padding:60px;color:#64748b;">Sem dados</div>`;
+            return;
+        }
+        
+        container.innerHTML = sorted.map(([nome, qtd], i) => `
+            <div class="bar-exec-item" style="animation: fadeSlideIn 0.5s ${i * 0.1}s both;">
+                <div class="bar-exec-label">
+                    <span>${nome}</span>
+                    <span><strong>${qtd}</strong> fechamentos</span>
+                </div>
+                <div class="bar-exec-track">
+                    <div class="bar-exec-fill" style="width: ${(qtd / max) * 100}%;">
+                        ${qtd}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    renderTabelaRecente() {
+        const tbody = document.getElementById('tabelaRecente');
+        const recentes = [...this.data].reverse().slice(0, 5);
+        
+        if (recentes.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:#64748b;">Nenhum registro</td></tr>`;
+            return;
+        }
+        
+        tbody.innerHTML = recentes.map(f => `
+            <tr>
+                <td>${this.formatDate(f.data)}</td>
+                <td>${f.vendedora}</td>
+                <td>${f.cliente}</td>
+                <td>${f.marca}</td>
+                <td>${this.getStatusBadge(f.status)}</td>
+                <td style="color:#10b981;font-weight:600;">R$ ${f.valor.toFixed(2)}</td>
+            </tr>
+        `).join('');
+    }
+    
+    // ========== FECHAMENTOS ==========
+    renderFechamentos() {
+        this.populateFiltroVendedoras();
+        this.applyFilters();
+    }
+    
+    applyFilters() {
+        const f = this.filtros;
+        f.dataInicio = document.getElementById('filtroDataInicio').value;
+        f.dataFim = document.getElementById('filtroDataFim').value;
+        f.vendedora = document.getElementById('filtroVendedora').value;
+        f.status = document.getElementById('filtroStatus').value;
+        
+        let filtered = [...this.data];
+        
+        if (f.dataInicio) filtered = filtered.filter(item => item.data >= f.dataInicio);
+        if (f.dataFim) filtered = filtered.filter(item => item.data <= f.dataFim);
+        if (f.vendedora) filtered = filtered.filter(item => item.vendedora === f.vendedora);
+        if (f.status) filtered = filtered.filter(item => item.status === f.status);
+        
+        // Sort by date desc
+        filtered.sort((a, b) => new Date(b.data) - new Date(a.data));
+        
+        this.renderTabelaFechamentos(filtered);
+        
+        document.getElementById('registrosInfo').textContent = `${filtered.length} registro(s)`;
+    }
+    
+    clearFilters() {
+        document.getElementById('filtroDataInicio').value = '';
+        document.getElementById('filtroDataFim').value = '';
+        document.getElementById('filtroVendedora').value = '';
+        document.getElementById('filtroStatus').value = '';
+        this.filtros = { dataInicio: '', dataFim: '', vendedora: '', status: '' };
+        this.applyFilters();
+    }
+    
+    populateFiltroVendedoras() {
+        const vendedoras = [...new Set(this.data.map(f => f.vendedora))].sort();
+        const select = document.getElementById('filtroVendedora');
+        select.innerHTML = '<option value="">Todas</option>' +
+            vendedoras.map(v => `<option value="${v}">${v}</option>`).join('');
+    }
+    
+    renderTabelaFechamentos(data) {
+        const tbody = document.getElementById('tabelaFechamentos');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:#64748b;">
+                Nenhum fechamento encontrado</td></tr>`;
+            return;
+        }
+        
+        tbody.innerHTML = data.map(f => `
+            <tr>
+                <td>${this.formatDate(f.data)}</td>
+                <td>${f.vendedora}</td>
+                <td>${f.horario}</td>
+                <td>${f.cliente}</td>
+                <td>${f.marca}</td>
+                <td>${this.getStatusBadge(f.status)}</td>
+                <td style="color:#10b981;font-weight:600;">R$ ${f.valor.toFixed(2)}</td>
+                <td>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-exec-outline" style="padding:6px 10px;font-size:11px;" 
+                                onclick="app.editFechamento(${f.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-exec-outline" style="padding:6px 10px;font-size:11px;border-color:#ef4444;color:#ef4444;" 
+                                onclick="app.deleteFechamento(${f.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    // ========== MODAL ==========
+    openModal(id = null) {
+        const modal = document.getElementById('modalFechamento');
+        const form = document.getElementById('formFechamento');
+        form.reset();
+        
+        if (id) {
+            document.getElementById('modalTitle').textContent = 'Editar Fechamento';
+            const fechamento = this.data.find(f => f.id === id);
+            if (fechamento) {
+                document.getElementById('inputData').value = fechamento.data;
+                document.getElementById('inputHorario').value = fechamento.horario;
+                document.getElementById('inputVendedora').value = fechamento.vendedora;
+                document.getElementById('inputCliente').value = fechamento.cliente;
+                document.getElementById('inputMarca').value = fechamento.marca;
+                document.getElementById('inputValor').value = fechamento.valor;
+                document.getElementById('inputStatus').value = fechamento.status;
+                form.dataset.editId = id;
+            }
+        } else {
+            document.getElementById('modalTitle').textContent = 'Novo Fechamento';
+            document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+            delete form.dataset.editId;
+        }
+        
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    closeModal() {
+        document.getElementById('modalFechamento').classList.remove('active');
+        document.body.style.overflow = '';
+        const form = document.getElementById('formFechamento');
+        form.reset();
+        delete form.dataset.editId;
+    }
+    
+    saveFechamento() {
+        const form = document.getElementById('formFechamento');
+        const editId = form.dataset.editId;
+        
+        const fechamento = {
+            data: document.getElementById('inputData').value,
+            horario: document.getElementById('inputHorario').value,
+            vendedora: document.getElementById('inputVendedora').value.trim(),
+            cliente: document.getElementById('inputCliente').value.trim(),
+            marca: document.getElementById('inputMarca').value.trim(),
+            status: document.getElementById('inputStatus').value,
+            valor: parseFloat(document.getElementById('inputValor').value)
+        };
+        
+        // Validation
+        if (!fechamento.data || !fechamento.vendedora || !fechamento.cliente || 
+            !fechamento.marca || !fechamento.status || isNaN(fechamento.valor)) {
+            this.showToast('Preencha todos os campos!', 'error');
+            return;
+        }
+        
+        if (editId) {
+            const index = this.data.findIndex(f => f.id === parseInt(editId));
+            if (index !== -1) {
+                this.data[index] = { ...this.data[index], ...fechamento };
+                this.showToast('Fechamento atualizado!', 'success');
+            }
+        } else {
+            this.data.push({ id: this.nextId++, ...fechamento });
+            this.showToast('Fechamento criado!', 'success');
+        }
+        
+        this.saveData();
+        this.closeModal();
+        this.renderAll();
+    }
+    
+    editFechamento(id) {
+        this.openModal(id);
+    }
+    
+    deleteFechamento(id) {
+        const fechamento = this.data.find(f => f.id === id);
+        if (!fechamento) return;
+        
+        if (confirm(`Excluir fechamento de ${fechamento.cliente}?`)) {
+            this.data = this.data.filter(f => f.id !== id);
+            this.saveData();
+            this.renderAll();
+            this.showToast('Fechamento excluído!', 'success');
+        }
+    }
+    
+    // ========== VENDEDORAS ==========
+    renderVendedoras() {
+        const container = document.getElementById('vendedorasGrid');
+        const vendedoras = {};
+        
+        this.data.forEach(f => {
+            if (!vendedoras[f.vendedora]) {
+                vendedoras[f.vendedora] = { total: 0, pagos: 0, assinados: 0, valor: 0 };
+            }
+            vendedoras[f.vendedora].total++;
+            vendedoras[f.vendedora].valor += f.valor;
+            if (f.status === 'Pago e Assinado') vendedoras[f.vendedora].pagos++;
+            else vendedoras[f.vendedora].assinados++;
+        });
+        
+        if (Object.keys(vendedoras).length === 0) {
+            container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748b;">
+                Nenhuma vendedora cadastrada</div>`;
+            return;
+        }
+        
+        container.innerHTML = Object.entries(vendedoras)
+            .sort((a, b) => b[1].total - a[1].total)
+            .map(([nome, stats]) => `
+                <div class="vendedora-card">
+                    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                        <div style="width:48px;height:48px;border-radius:50%;background:var(--gold-bg);
+                                    display:flex;align-items:center;justify-content:center;
+                                    font-size:20px;font-weight:700;color:var(--gold);">
+                            ${nome.charAt(0)}
+                        </div>
+                        <div>
+                            <h3 style="font-size:16px;font-weight:600;color:var(--text-white);">${nome}</h3>
+                            <p style="font-size:12px;color:var(--text-tertiary);">${stats.total} fechamentos</p>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div style="padding:12px;background:rgba(16,185,129,0.1);border-radius:8px;text-align:center;">
+                            <div style="font-size:20px;font-weight:700;color:#10b981;">${stats.pagos}</div>
+                            <div style="font-size:10px;color:#64748b;text-transform:uppercase;">Pagos</div>
+                        </div>
+                        <div style="padding:12px;background:rgba(201,168,76,0.1);border-radius:8px;text-align:center;">
+                            <div style="font-size:20px;font-weight:700;color:#c9a84c;">${stats.assinados}</div>
+                            <div style="font-size:10px;color:#64748b;text-transform:uppercase;">Assinados</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-color);
+                                text-align:center;">
+                        <div style="font-size:24px;font-weight:700;color:#10b981;">
+                            R$ ${stats.valor.toFixed(2)}
+                        </div>
+                        <div style="font-size:10px;color:#64748b;text-transform:uppercase;">Valor Total</div>
+                    </div>
+                </div>
+            `).join('');
+    }
+    
+    // ========== ARQUIVOS ==========
+    renderArquivos() {
+        const container = document.getElementById('arquivosGrid');
+        const meses = {};
+        
+        this.data.forEach(f => {
+            const key = f.data.substring(0, 7);
+            if (!meses[key]) meses[key] = [];
+            meses[key].push(f);
+        });
+        
+        if (Object.keys(meses).length === 0) {
+            container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748b;">
+                Nenhum arquivo disponível</div>`;
+            return;
+        }
+        
+        container.innerHTML = Object.entries(meses)
+            .sort((a, b) => b[0].localeCompare(a[0]))
+            .map(([mes, items]) => {
+                const [ano, mesNum] = mes.split('-');
+                const nomeMes = this.getMonthName(parseInt(mesNum));
+                const total = items.length;
+                const valor = items.reduce((s, i) => s + i.valor, 0);
+                const pagos = items.filter(i => i.status === 'Pago e Assinado').length;
+                
+                return `
+                    <div class="arquivo-card" onclick="app.openArquivo('${mes}')">
+                        <div class="folder-icon">📁</div>
+                        <h3>${nomeMes} ${ano}</h3>
+                        <p>${total} fechamentos</p>
+                        <p style="margin-top:4px;color:#10b981;font-weight:600;">
+                            R$ ${valor.toFixed(2)}
+                        </p>
+                        <p style="margin-top:2px;">${pagos} pagos e assinados</p>
+                    </div>
+                `;
+            }).join('');
+    }
+    
+    openArquivo(mes) {
+        const [ano, mesNum] = mes.split('-');
+        const nomeMes = this.getMonthName(parseInt(mesNum));
+        const items = this.data.filter(f => f.data.startsWith(mes));
+        const total = items.length;
+        const valor = items.reduce((s, i) => s + i.valor, 0);
+        const pagos = items.filter(i => i.status === 'Pago e Assinado').length;
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-exec-overlay active';
+        overlay.onclick = function(e) { if (e.target === this) this.remove(); };
+        
+        overlay.innerHTML = `
+            <div class="modal-exec" onclick="event.stopPropagation()" style="max-width:800px;">
+                <div class="modal-exec-header">
+                    <h2>📁 ${nomeMes} ${ano}</h2>
+                    <button class="modal-exec-close" onclick="this.closest('.modal-exec-overlay').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div style="padding:24px;">
+                    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+                        <div class="kpi-card">
+                            <div class="kpi-body">
+                                <span class="kpi-label">Total</span>
+                                <div class="kpi-value">${total}</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-body">
+                                <span class="kpi-label">Valor Total</span>
+                                <div class="kpi-value" style="font-size:24px;">R$ ${valor.toFixed(2)}</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-body">
+                                <span class="kpi-label">Pagos</span>
+                                <div class="kpi-value">${pagos}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table-exec">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Vendedora</th>
+                                <th>Cliente</th>
+                                <th>Marca</th>
+                                <th>Status</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${items.map(f => `
+                                <tr>
+                                    <td>${this.formatDate(f.data)}</td>
+                                    <td>${f.vendedora}</td>
+                                    <td>${f.cliente}</td>
+                                    <td>${f.marca}</td>
+                                    <td>${this.getStatusBadge(f.status)}</td>
+                                    <td style="color:#10b981;font-weight:600;">R$ ${f.valor.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+    }
+    
+    // ========== UTILITIES ==========
+    formatDate(dateStr) {
+        const [y, m, d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    }
+    
+    getMonthName(monthNum) {
+        const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                       'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        return months[monthNum - 1];
+    }
+    
+    getStatusBadge(status) {
+        const cls = status === 'Pago e Assinado' ? 'pago' : 'assinado';
+        return `<span class="badge-exec ${cls}">${status}</span>`;
+    }
+    
+    updateDateDisplay() {
+        const now = new Date();
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR', options);
+    }
+    
+    updateNavCount() {
+        const count = this.data.length;
+        const navCount = document.querySelector('.nav-count');
+        if (navCount) navCount.textContent = count;
+    }
+    
+    globalSearch(term) {
+        if (term.length < 2) return;
+        
+        const results = this.data.filter(f => 
+            f.vendedora.toLowerCase().includes(term.toLowerCase()) ||
+            f.cliente.toLowerCase().includes(term.toLowerCase()) ||
+            f.marca.toLowerCase().includes(term.toLowerCase())
+        );
+        
+        if (results.length > 0) {
+            this.navigateTo('fechamentos');
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            document.getElementById('filtroVendedora').value = '';
+            document.getElementById('filtroStatus').value = '';
+            this.filtros = { dataInicio: '', dataFim: '', vendedora: '', status: '' };
+            this.renderTabelaFechamentos(results);
+            document.getElementById('registrosInfo').textContent = `${results.length} resultado(s)`;
+        }
+    }
+    
+    exportData() {
+        const json = JSON.stringify(this.data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fechamentos_executivo_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.showToast('Dados exportados com sucesso!', 'success');
+    }
+    
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            z-index: 9999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        `;
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
+            ${message}
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 }
 
-.modal-exec-header {
-    padding: 24px 32px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-exec-header h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-white);
-}
-
-.modal-exec-close {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--border-color);
-    background: transparent;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-exec-close:hover {
-    border-color: var(--red);
-    color: var(--red);
-    background: rgba(239,68,68,0.1);
-}
-
-.modal-exec-form {
-    padding: 32px;
-}
-
-.form-exec-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.form-exec-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-
-.form-exec-group .input-exec {
-    width: 100%;
-}
-
-.modal-exec-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border-color);
-}
-
-/* ========== VENDEDORAS GRID ========== */
-.vendedoras-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.vendedora-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    transition: var(--transition);
-}
-
-.vendedora-card:hover {
-    border-color: var(--gold);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* ========== ARQUIVOS GRID ========== */
-.arquivos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-.arquivo-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.arquivo-card:hover {
-    border-color: var(--gold);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.arquivo-card .folder-icon {
-    font-size: 40px;
-    margin-bottom: 16px;
-    color: var(--gold);
-}
-
-.arquivo-card h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-white);
-    margin-bottom: 8px;
-}
-
-.arquivo-card p {
-    font-size: 13px;
-    color: var(--text-tertiary);
-}
-
-/* ========== RELATÓRIOS PLACEHOLDER ========== */
-.relatorios-placeholder {
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-tertiary);
-}
-
-.relatorios-placeholder i {
-    font-size: 64px;
-    margin-bottom: 20px;
-    color: var(--gold);
-    opacity: 0.5;
-}
-
-.relatorios-placeholder h3 {
-    font-size: 20px;
-    color: var(--text-white);
-    margin-bottom: 8px;
-}
-
-/* ========== RESPONSIVO ========== */
-@media (max-width: 1200px) {
-    .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
+// Inject keyframe animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(120%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
     }
-    .charts-exec-grid {
-        grid-template-columns: 1fr;
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(120%); opacity: 0; }
     }
-}
+`;
+document.head.appendChild(style);
 
-@media (max-width: 768px) {
-    .exec-sidebar {
-        width: 72px;
-    }
-    .brand-text, .nav-label, .nav-count, .user-details {
-        display: none;
-    }
-    .exec-main {
-        margin-left: 72px;
-    }
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-    .form-exec-row {
-        grid-template-columns: 1fr;
-    }
-    .filters-exec-bar {
-        flex-direction: column;
-    }
-}
+// Initialize
+const app = new ExecutiveSystem();
