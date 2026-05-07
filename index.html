@@ -149,6 +149,84 @@
         }
         .nav-item.active .nav-badge { background: var(--gold); color: #0a0e17; }
 
+        /* SIDEBAR FOOTER - ADMIN EDITÁVEL */
+        .side-footer {
+            padding: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c9a84c, #f0d070, #c9a84c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e17;
+            font-size: 14px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(201,168,76,0.3);
+        }
+        .user-avatar:hover {
+            box-shadow: 0 4px 20px rgba(201,168,76,0.5);
+            transform: scale(1.05);
+        }
+        .user-info { overflow: hidden; flex: 1; }
+        .user-name-editable {
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px dashed transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .user-name-editable:hover {
+            border-color: rgba(201,168,76,0.3);
+            background: rgba(201,168,76,0.05);
+            color: var(--gold);
+        }
+        .user-name-editable i {
+            font-size: 9px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .user-name-editable:hover i { opacity: 0.7; }
+        .user-role {
+            font-size: 10px;
+            color: var(--text3);
+            display: block;
+        }
+        .btn-edit-admin {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: var(--text3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .btn-edit-admin:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201,168,76,0.1);
+        }
+
         /* MAIN */
         .main {
             flex: 1;
@@ -213,8 +291,8 @@
         /* KPI CARDS */
         .kpi-row {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
             margin-bottom: 28px;
         }
         .kpi-card {
@@ -222,21 +300,21 @@
             backdrop-filter: blur(12px);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px;
+            padding: 20px;
             transition: all 0.3s;
         }
         .kpi-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.5);
         }
-        .kpi-card .accent {
+        .kpi-accent {
             height: 3px;
-            margin: -22px -22px 18px -22px;
+            margin: -20px -20px 16px -20px;
             border-radius: var(--radius) var(--radius) 0 0;
             background: linear-gradient(90deg, #c9a84c, #f0d070);
         }
-        .kpi-card .accent.green { background: linear-gradient(90deg, #10b981, #34d399); }
-        .kpi-card .accent.amber { background: linear-gradient(90deg, #c9a84c, #f0d070); }
+        .kpi-accent.green { background: linear-gradient(90deg, #10b981, #34d399); }
+        .kpi-accent.amber { background: linear-gradient(90deg, #c9a84c, #f0d070); }
         .kpi-label {
             font-size: 10px;
             font-weight: 600;
@@ -250,26 +328,11 @@
         }
         .kpi-label i { color: var(--gold); opacity: 0.7; }
         .kpi-value {
-            font-size: 34px;
+            font-size: 32px;
             font-weight: 800;
             letter-spacing: -2px;
         }
-        .kpi-value.sm { font-size: 24px; letter-spacing: -1px; }
-
-        /* CHARTS */
-        .chart-card {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        .chart-card h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
+        .kpi-value.sm { font-size: 20px; letter-spacing: -1px; }
 
         /* TABLE */
         .table-card {
@@ -336,16 +399,8 @@
         }
         .badge.pending::before { background: var(--gold); }
 
-        /* Valor pago - verde */
-        .valor-paid {
-            color: #10b981;
-            font-weight: 700;
-        }
-        /* Valor pendente - dourado */
-        .valor-pending {
-            color: #c9a84c;
-            font-weight: 600;
-        }
+        .valor-paid { color: #10b981; font-weight: 700; }
+        .valor-pending { color: #c9a84c; font-weight: 600; }
 
         /* BUTTONS */
         .btn-gold {
@@ -463,14 +518,10 @@
             font-weight: 800;
             letter-spacing: -1px;
         }
-        .total-box.green-box {
-            border-color: rgba(16,185,129,0.3);
-        }
+        .total-box.green-box { border-color: rgba(16,185,129,0.3); }
         .total-box.green-box h5 { color: #10b981; }
         .total-box.green-box .big-val { color: #10b981; }
-        .total-box.gold-box {
-            border-color: rgba(201,168,76,0.3);
-        }
+        .total-box.gold-box { border-color: rgba(201,168,76,0.3); }
         .total-box.gold-box h5 { color: #c9a84c; }
         .total-box.gold-box .big-val { color: #c9a84c; }
 
@@ -565,6 +616,82 @@
             margin-top: 10px;
         }
 
+        /* ADMIN EDIT MODAL */
+        .admin-edit-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .admin-edit-dialog {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.7);
+        }
+        .admin-avatar-large {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c9a84c, #f0d070, #c9a84c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a0e17;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 25px rgba(201,168,76,0.3);
+        }
+        .admin-edit-dialog h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .admin-edit-dialog p {
+            font-size: 12px;
+            color: var(--text3);
+            margin-bottom: 20px;
+        }
+        .admin-edit-dialog .input-admin-name {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-family: inherit;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .admin-edit-dialog .input-admin-name:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(201,168,76,0.15);
+        }
+        .admin-edit-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
         /* TOAST */
         .toast {
             position: fixed;
@@ -591,13 +718,16 @@
 
         /* RESPONSIVE */
         @media (max-width: 1200px) {
-            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .kpi-row { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
             .sidebar { width: 68px; }
             .side-brand div:not(.side-logo),
             .nav-item span:not(.nav-icon),
-            .nav-badge { display: none; }
+            .nav-badge,
+            .side-footer .user-info,
+            .side-footer .btn-edit-admin { display: none; }
+            .side-footer { justify-content: center; }
             .nav-item { justify-content: center; padding: 12px; }
             .main { margin-left: 68px; }
             .kpi-row { grid-template-columns: 1fr; }
@@ -638,6 +768,19 @@
                 <span>Arquivos</span>
             </button>
         </nav>
+        <!-- ADMIN EDITÁVEL NO RODAPÉ -->
+        <div class="side-footer">
+            <div class="user-avatar" id="userAvatar" onclick="editarNomeAdmin()" title="Clique para editar">A</div>
+            <div class="user-info">
+                <div class="user-name-editable" id="userNameDisplay" onclick="editarNomeAdmin()" title="Clique para editar seu nome">
+                    Admin <i class="fas fa-pen"></i>
+                </div>
+                <div class="user-role">Executivo</div>
+            </div>
+            <button class="btn-edit-admin" onclick="editarNomeAdmin()" title="Editar perfil">
+                <i class="fas fa-pen"></i>
+            </button>
+        </div>
     </aside>
 
     <!-- MAIN -->
@@ -663,29 +806,29 @@
         <div class="content">
             <!-- DASHBOARD -->
             <div class="page active" id="page-dashboard">
-                <div class="kpi-row" style="grid-template-columns: repeat(5, 1fr);">
+                <div class="kpi-row">
                     <div class="kpi-card">
-                        <div class="accent"></div>
+                        <div class="kpi-accent"></div>
                         <div class="kpi-label"><i class="fas fa-handshake"></i> Total</div>
                         <div class="kpi-value" id="kpiTotal">0</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="accent green"></div>
+                        <div class="kpi-accent green"></div>
                         <div class="kpi-label"><i class="fas fa-check-double"></i> Pagos</div>
                         <div class="kpi-value" id="kpiPagos" style="color:#10b981;">0</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="accent amber"></div>
+                        <div class="kpi-accent amber"></div>
                         <div class="kpi-label"><i class="fas fa-signature"></i> Assinados</div>
                         <div class="kpi-value" id="kpiAssinados" style="color:#c9a84c;">0</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="accent green"></div>
+                        <div class="kpi-accent green"></div>
                         <div class="kpi-label"><i class="fas fa-dollar-sign"></i> Valor Pagos</div>
                         <div class="kpi-value sm" id="kpiValorPagos" style="color:#10b981;">R$ 0</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="accent amber"></div>
+                        <div class="kpi-accent amber"></div>
                         <div class="kpi-label"><i class="fas fa-dollar-sign"></i> Valor Assinados</div>
                         <div class="kpi-value sm" id="kpiValorAssinados" style="color:#c9a84c;">R$ 0</div>
                     </div>
@@ -726,7 +869,7 @@
                     </div>
                 </div>
 
-                <!-- TOTAIS -->
+                <!-- TOTAIS SEPARADOS -->
                 <div class="totals-row" id="totaisRow">
                     <div class="total-box green-box">
                         <h5><i class="fas fa-check-circle"></i> Total Pagos e Assinados</h5>
@@ -824,7 +967,7 @@
     </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL DE FECHAMENTO -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-dialog">
         <div class="modal-head">
@@ -891,6 +1034,7 @@
     // ========== INIT ==========
     function init() {
         loadData();
+        carregarNomeAdmin();
         setupNav();
         setupFilters();
         setupModal();
@@ -901,6 +1045,72 @@
         window.addEventListener('beforeunload', autoBackup);
     }
 
+    // ========== ADMIN NAME ==========
+    function carregarNomeAdmin() {
+        const nomeSalvo = localStorage.getItem('cf_admin_name');
+        if (nomeSalvo) {
+            atualizarUIAdmin(nomeSalvo);
+        }
+    }
+
+    function atualizarUIAdmin(nome) {
+        document.getElementById('userNameDisplay').innerHTML = `${nome} <i class="fas fa-pen"></i>`;
+        document.getElementById('userAvatar').textContent = nome.charAt(0).toUpperCase();
+    }
+
+    window.editarNomeAdmin = function() {
+        const nomeAtual = document.getElementById('userNameDisplay').textContent.replace(/\s+/g, ' ').trim();
+        const cleanName = nomeAtual.includes(' ') ? nomeAtual.split(' ')[0] : nomeAtual;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'admin-edit-overlay';
+        overlay.onclick = function(e) {
+            if (e.target === this) this.remove();
+        };
+
+        overlay.innerHTML = `
+            <div class="admin-edit-dialog" onclick="event.stopPropagation()">
+                <div class="admin-avatar-large" id="adminAvatarLarge">${cleanName.charAt(0).toUpperCase()}</div>
+                <h4>Editar Perfil</h4>
+                <p>Personalize o nome do administrador</p>
+                <input type="text" class="input-admin-name" id="inputAdminName" value="${cleanName}" placeholder="Seu nome" maxlength="30" oninput="atualizarAvatarPreview()">
+                <div class="admin-edit-actions">
+                    <button class="btn-outline" onclick="this.closest('.admin-edit-overlay').remove()">Cancelar</button>
+                    <button class="btn-gold" onclick="salvarNomeAdmin()">Salvar</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        setTimeout(() => {
+            const input = document.getElementById('inputAdminName');
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }, 100);
+    };
+
+    window.atualizarAvatarPreview = function() {
+        const input = document.getElementById('inputAdminName');
+        if (input) {
+            const avatar = document.getElementById('adminAvatarLarge');
+            if (avatar && input.value) {
+                avatar.textContent = input.value.charAt(0).toUpperCase();
+            }
+        }
+    };
+
+    window.salvarNomeAdmin = function() {
+        const input = document.getElementById('inputAdminName');
+        const nome = input.value.trim() || 'Admin';
+        localStorage.setItem('cf_admin_name', nome);
+        atualizarUIAdmin(nome);
+        document.querySelector('.admin-edit-overlay')?.remove();
+        showToast('Nome atualizado com sucesso!', 'success');
+    };
+
+    // ========== DATA ==========
     function loadData() {
         const saved = localStorage.getItem('cf_exec_final');
         if (saved) {
@@ -928,7 +1138,6 @@
         const now = new Date();
         const y = now.getFullYear();
         const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
 
         data = [
             { id: 1, data: `${y}-${m}-07`, vendedora: 'NATALY', horario: '08:17', cliente: 'ANDERSON ARCANJO DO SANTOS', marca: 'Registro de Marca', status: 'Pago e Assinado', valor: 198.00 },
@@ -1008,7 +1217,6 @@
         document.getElementById('kpiValorPagos').textContent = `R$ ${valorPagos.toFixed(2)}`;
         document.getElementById('kpiValorAssinados').textContent = `R$ ${valorAssinados.toFixed(2)}`;
 
-        // Tabela recente
         const tbody = document.getElementById('tabelaRecente');
         const recentes = [...data].reverse().slice(0, 8);
         if (recentes.length === 0) {
@@ -1050,7 +1258,6 @@
         if (s) filtered = filtered.filter(f => f.status === s);
         filtered.sort((a, b) => new Date(b.data + 'T' + b.horario) - new Date(a.data + 'T' + a.horario));
 
-        // Atualizar totais
         const pagos = filtered.filter(f => f.status === 'Pago e Assinado');
         const assinados = filtered.filter(f => f.status === 'Apenas Assinado');
         document.getElementById('totalPagosValor').textContent = `R$ ${pagos.reduce((s,f) => s + f.valor, 0).toFixed(2)}`;
@@ -1058,7 +1265,6 @@
         document.getElementById('totalAssinadosValor').textContent = `R$ ${assinados.reduce((s,f) => s + f.valor, 0).toFixed(2)}`;
         document.getElementById('totalAssinadosQtd').textContent = `${assinados.length} contratos`;
 
-        // Tabela
         const tbody = document.getElementById('tabelaFechamentos');
         if (filtered.length === 0) {
             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#64748b;">Nenhum fechamento encontrado</td></tr>';
