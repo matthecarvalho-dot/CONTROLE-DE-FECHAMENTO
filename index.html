@@ -9,7 +9,7 @@
     <style>
         /* ============================================
            CONTROLE PRO - EXECUTIVE SUITE v3.0
-           Design Executivo Premium com Background
+           Design Executivo Premium com Background Animado
            ============================================ */
         :root {
             --bg-primary: #0a0e17;
@@ -58,15 +58,25 @@
             min-height: 100vh;
             position: relative;
             
-            /* BACKGROUND PERSONALIZADO */
-            background-image: url('https://images.unsplash.com/photo-1557682260-96773eb01377?w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            /* BACKGROUND ANIMADO CORRIGIDO */
+            background: linear-gradient(135deg, 
+                #0a0e17 0%, 
+                #111827 20%, 
+                #0d1117 40%, 
+                #1a2332 60%, 
+                #0a0e17 80%, 
+                #111827 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
         }
 
-        /* Overlay escuro sobre a imagem */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Overlay com padrão geométrico dourado */
         body::before {
             content: '';
             position: fixed;
@@ -74,15 +84,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, 
-                rgba(10, 14, 23, 0.92) 0%, 
-                rgba(17, 24, 39, 0.88) 50%, 
-                rgba(26, 35, 50, 0.90) 100%);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(201, 168, 76, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(201, 168, 76, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.02) 0%, transparent 70%),
+                radial-gradient(circle at 10% 90%, rgba(16, 185, 129, 0.02) 0%, transparent 40%),
+                radial-gradient(circle at 90% 10%, rgba(201, 168, 76, 0.03) 0%, transparent 30%);
             z-index: 0;
             pointer-events: none;
         }
 
-        /* Partículas douradas sutis */
+        /* Linhas diagonais sutis */
         body::after {
             content: '';
             position: fixed;
@@ -90,10 +102,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(201, 168, 76, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(201, 168, 76, 0.02) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(201, 168, 76, 0.01) 0%, transparent 70%);
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 100px,
+                rgba(201, 168, 76, 0.008) 100px,
+                rgba(201, 168, 76, 0.008) 101px
+            );
             z-index: 0;
             pointer-events: none;
         }
