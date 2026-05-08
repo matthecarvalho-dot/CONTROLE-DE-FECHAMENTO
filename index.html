@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Pro | Sistema Executivo de Fechamento</title>
+    <link rel="icon" href="logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -96,14 +97,18 @@
             width: 36px;
             height: 36px;
             min-width: 36px;
-            background: linear-gradient(135deg, #c9a84c, #f0d070, #c9a84c);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 14px;
-            color: #0a0e17;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .side-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
         }
 
         .side-brand-text {
@@ -1097,9 +1102,11 @@
 <div class="app">
     <!-- SIDEBAR CORRIGIDA -->
     <aside class="sidebar" id="sidebar">
-        <!-- Marca -->
+        <!-- Marca com LOGO -->
         <div class="side-brand">
-            <div class="side-logo">CF</div>
+            <div class="side-logo">
+                <img src="logo.jpg" alt="Logo">
+            </div>
             <div class="side-brand-text">
                 <div class="side-name">Controle<span>Pro</span></div>
                 <div class="side-sub">Executive Suite</div>
@@ -1127,7 +1134,7 @@
             </button>
         </nav>
 
-        <!-- RODAPÉ COM ADMIN - SEMPRE VISÍVEL -->
+        <!-- RODAPÉ COM ADMIN -->
         <div class="side-footer">
             <div class="user-avatar" id="userAvatar" onclick="editarNomeAdmin()" title="Clique para editar seu nome">A</div>
             <div class="user-info">
