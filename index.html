@@ -60,7 +60,6 @@
 
         .app { position:relative; z-index:1; display:flex; min-height:100vh; }
 
-        /* ========== SIDEBAR CORRIGIDA ========== */
         .sidebar {
             width: 260px;
             min-width: 260px;
@@ -223,7 +222,6 @@
             color: #0a0e17;
         }
 
-        /* SIDEBAR FOOTER - CORRIGIDO */
         .side-footer {
             padding: 12px 14px;
             border-top: 1px solid var(--border);
@@ -330,7 +328,6 @@
             background: rgba(201,168,76,0.1);
         }
 
-        /* ========== MAIN ========== */
         .main {
             flex: 1;
             margin-left: 260px;
@@ -344,7 +341,6 @@
             width: calc(100% - 70px);
         }
 
-        /* TOPBAR */
         .topbar {
             background: rgba(17,24,39,0.85);
             backdrop-filter: blur(20px);
@@ -420,7 +416,6 @@
             color: var(--gold);
         }
 
-        /* CONTENT */
         .content {
             padding: 28px;
         }
@@ -439,7 +434,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* KPI CARDS */
         .kpi-row {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -506,7 +500,6 @@
             letter-spacing: -1px;
         }
 
-        /* TABLE */
         .table-card {
             background: var(--glass);
             backdrop-filter: blur(12px);
@@ -561,7 +554,6 @@
             background: rgba(201,168,76,0.03);
         }
 
-        /* BADGES */
         .badge {
             padding: 4px 10px;
             border-radius: 20px;
@@ -608,7 +600,6 @@
             font-weight: 600;
         }
 
-        /* BUTTONS */
         .btn-gold {
             padding: 9px 20px;
             background: linear-gradient(135deg, #c9a84c, #f0d070, #c9a84c);
@@ -676,7 +667,6 @@
             color: #fff;
         }
 
-        /* FILTERS */
         .filter-bar {
             display: flex;
             gap: 12px;
@@ -730,7 +720,6 @@
             font-size: 11px;
         }
 
-        /* SECTION HEADER */
         .section-head {
             display: flex;
             justify-content: space-between;
@@ -747,7 +736,6 @@
             letter-spacing: -0.5px;
         }
 
-        /* TOTALS ROW */
         .totals-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -802,7 +790,6 @@
             color: #c9a84c;
         }
 
-        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -926,7 +913,6 @@
             margin-top: 10px;
         }
 
-        /* ADMIN EDIT MODAL */
         .admin-edit-overlay {
             position: fixed;
             top: 0;
@@ -1013,7 +999,31 @@
             justify-content: center;
         }
 
-        /* TOAST */
+        /* VENDEDOR EDIT STYLES */
+        .vendedor-name-editable {
+            cursor: pointer;
+            border-bottom: 1px dashed rgba(201,168,76,0.3);
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .vendedor-name-editable:hover {
+            background: rgba(201,168,76,0.05);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .vendedor-name-editable i {
+            font-size: 9px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .vendedor-name-editable:hover i {
+            opacity: 0.7;
+        }
+
         .toast {
             position: fixed;
             bottom: 20px;
@@ -1044,76 +1054,34 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* RESPONSIVE */
         @media (max-width: 1200px) {
-            .kpi-row {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .kpi-row { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-                min-width: 70px;
-            }
-
-            .sidebar .side-brand-text,
-            .sidebar .nav-label,
-            .sidebar .nav-badge,
-            .sidebar .user-info,
-            .sidebar .btn-edit-admin {
-                display: none;
-            }
-
-            .sidebar .nav-item {
-                justify-content: center;
-                padding: 12px;
-            }
-
-            .sidebar .side-footer {
-                justify-content: center;
-            }
-
-            .main {
-                margin-left: 70px;
-                width: calc(100% - 70px);
-            }
-
-            .kpi-row {
-                grid-template-columns: 1fr;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-bar {
-                flex-direction: column;
-            }
-
-            .totals-row {
-                grid-template-columns: 1fr;
-            }
+            .sidebar { width: 70px; min-width: 70px; }
+            .sidebar .side-brand-text, .sidebar .nav-label, .sidebar .nav-badge, .sidebar .user-info, .sidebar .btn-edit-admin { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 12px; }
+            .sidebar .side-footer { justify-content: center; }
+            .main { margin-left: 70px; width: calc(100% - 70px); }
+            .kpi-row { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; }
+            .totals-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <div class="app">
-    <!-- SIDEBAR CORRIGIDA -->
     <aside class="sidebar" id="sidebar">
-        <!-- Marca com LOGO -->
         <div class="side-brand">
-            <div class="side-logo">
-                <img src="logo.jpg" alt="Logo">
-            </div>
+            <div class="side-logo"><img src="logo.jpg" alt="Logo"></div>
             <div class="side-brand-text">
                 <div class="side-name">Controle<span>Pro</span></div>
                 <div class="side-sub">Executive Suite</div>
             </div>
         </div>
-
-        <!-- Navegação -->
         <nav class="side-nav">
             <button class="nav-item active" data-page="dashboard">
                 <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
@@ -1126,15 +1094,13 @@
             </button>
             <button class="nav-item" data-page="vendedoras">
                 <span class="nav-icon"><i class="fas fa-users"></i></span>
-                <span class="nav-label">Vendedoras</span>
+                <span class="nav-label">Vendedores</span>
             </button>
             <button class="nav-item" data-page="arquivos">
                 <span class="nav-icon"><i class="fas fa-archive"></i></span>
                 <span class="nav-label">Arquivos</span>
             </button>
         </nav>
-
-        <!-- RODAPÉ COM ADMIN -->
         <div class="side-footer">
             <div class="user-avatar" id="userAvatar" onclick="editarNomeAdmin()" title="Clique para editar seu nome">A</div>
             <div class="user-info">
@@ -1143,15 +1109,11 @@
                 </div>
                 <div class="user-role">Executivo</div>
             </div>
-            <button class="btn-edit-admin" onclick="editarNomeAdmin()" title="Editar perfil">
-                <i class="fas fa-pen"></i>
-            </button>
+            <button class="btn-edit-admin" onclick="editarNomeAdmin()" title="Editar perfil"><i class="fas fa-pen"></i></button>
         </div>
     </aside>
 
-    <!-- MAIN -->
     <div class="main" id="mainArea">
-        <!-- TOPBAR -->
         <header class="topbar">
             <div class="top-left">
                 <button class="btn-menu" id="btnMenuToggle"><i class="fas fa-bars"></i></button>
@@ -1161,133 +1123,58 @@
                 </div>
             </div>
             <div class="top-right">
-                <div class="date-badge">
-                    <i class="far fa-calendar-alt"></i>
-                    <span id="currentDate"></span>
-                </div>
+                <div class="date-badge"><i class="far fa-calendar-alt"></i><span id="currentDate"></span></div>
             </div>
         </header>
 
-        <!-- CONTENT -->
         <div class="content">
             <!-- DASHBOARD -->
             <div class="page active" id="page-dashboard">
                 <div class="kpi-row">
-                    <div class="kpi-card">
-                        <div class="kpi-accent"></div>
-                        <div class="kpi-label"><i class="fas fa-handshake"></i> Total</div>
-                        <div class="kpi-value" id="kpiTotal">0</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent green"></div>
-                        <div class="kpi-label"><i class="fas fa-check-double"></i> Pagos</div>
-                        <div class="kpi-value" id="kpiPagos" style="color:#10b981;">0</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent amber"></div>
-                        <div class="kpi-label"><i class="fas fa-signature"></i> Assinados</div>
-                        <div class="kpi-value" id="kpiAssinados" style="color:#c9a84c;">0</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent green"></div>
-                        <div class="kpi-label"><i class="fas fa-dollar-sign"></i> Valor Pagos</div>
-                        <div class="kpi-value sm" id="kpiValorPagos" style="color:#10b981;">R$ 0</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent amber"></div>
-                        <div class="kpi-label"><i class="fas fa-dollar-sign"></i> Valor Assinados</div>
-                        <div class="kpi-value sm" id="kpiValorAssinados" style="color:#c9a84c;">R$ 0</div>
-                    </div>
+                    <div class="kpi-card"><div class="kpi-accent"></div><div class="kpi-label"><i class="fas fa-handshake"></i> Total</div><div class="kpi-value" id="kpiTotal">0</div></div>
+                    <div class="kpi-card"><div class="kpi-accent green"></div><div class="kpi-label"><i class="fas fa-check-double"></i> Pagos</div><div class="kpi-value" id="kpiPagos" style="color:#10b981;">0</div></div>
+                    <div class="kpi-card"><div class="kpi-accent amber"></div><div class="kpi-label"><i class="fas fa-signature"></i> Assinados</div><div class="kpi-value" id="kpiAssinados" style="color:#c9a84c;">0</div></div>
+                    <div class="kpi-card"><div class="kpi-accent green"></div><div class="kpi-label"><i class="fas fa-dollar-sign"></i> Valor Pagos</div><div class="kpi-value sm" id="kpiValorPagos" style="color:#10b981;">R$ 0</div></div>
+                    <div class="kpi-card"><div class="kpi-accent amber"></div><div class="kpi-label"><i class="fas fa-dollar-sign"></i> Valor Assinados</div><div class="kpi-value sm" id="kpiValorAssinados" style="color:#c9a84c;">R$ 0</div></div>
                 </div>
                 <div class="table-card">
                     <div class="table-card-header"><h4>Últimos Registros</h4></div>
-                    <div style="overflow-x:auto;">
-                        <table>
-                            <thead>
-                                <tr><th>Data</th><th>Vendedora</th><th>Cliente</th><th>Marca</th><th>Status</th><th>Valor</th></tr>
-                            </thead>
-                            <tbody id="tabelaRecente"></tbody>
-                        </table>
-                    </div>
+                    <div style="overflow-x:auto;"><table><thead><tr><th>Data</th><th>Vendedor(a)</th><th>Cliente</th><th>Marca</th><th>Status</th><th>Valor</th></tr></thead><tbody id="tabelaRecente"></tbody></table></div>
                 </div>
             </div>
 
             <!-- FECHAMENTOS -->
             <div class="page" id="page-fechamentos">
-                <div class="section-head">
-                    <h3>Gestão de Fechamentos</h3>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn-gold" onclick="openModal()"><i class="fas fa-plus"></i> Novo</button>
-                        <button class="btn-outline" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Excel</button>
-                    </div>
-                </div>
+                <div class="section-head"><h3>Gestão de Fechamentos</h3><div style="display:flex;gap:8px;"><button class="btn-gold" onclick="openModal()"><i class="fas fa-plus"></i> Novo</button><button class="btn-outline" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Excel</button></div></div>
                 <div class="totals-row">
-                    <div class="total-box green-box">
-                        <h5><i class="fas fa-check-circle"></i> Pagos e Assinados</h5>
-                        <div class="big-val" id="totalPagosValor">R$ 0,00</div>
-                        <div style="font-size:10px;color:var(--text3);margin-top:4px;" id="totalPagosQtd">0 contratos</div>
-                    </div>
-                    <div class="total-box gold-box">
-                        <h5><i class="fas fa-clock"></i> Apenas Assinados</h5>
-                        <div class="big-val" id="totalAssinadosValor">R$ 0,00</div>
-                        <div style="font-size:10px;color:var(--text3);margin-top:4px;" id="totalAssinadosQtd">0 contratos</div>
-                    </div>
+                    <div class="total-box green-box"><h5><i class="fas fa-check-circle"></i> Pagos e Assinados</h5><div class="big-val" id="totalPagosValor">R$ 0,00</div><div style="font-size:10px;color:var(--text3);margin-top:4px;" id="totalPagosQtd">0 contratos</div></div>
+                    <div class="total-box gold-box"><h5><i class="fas fa-clock"></i> Apenas Assinados</h5><div class="big-val" id="totalAssinadosValor">R$ 0,00</div><div style="font-size:10px;color:var(--text3);margin-top:4px;" id="totalAssinadosQtd">0 contratos</div></div>
                 </div>
                 <div class="filter-bar">
-                    <div class="filter-group">
-                        <label>Período</label>
-                        <input type="date" class="filter-input" id="filtroDataInicio">
-                        <span class="filter-sep">até</span>
-                        <input type="date" class="filter-input" id="filtroDataFim">
-                    </div>
-                    <div class="filter-group">
-                        <label>Vendedora</label>
-                        <select class="filter-input" id="filtroVendedora"><option value="">Todas</option></select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Status</label>
-                        <select class="filter-input" id="filtroStatus">
-                            <option value="">Todos</option>
-                            <option value="Pago e Assinado">Pago e Assinado</option>
-                            <option value="Apenas Assinado">Apenas Assinado</option>
-                        </select>
-                    </div>
+                    <div class="filter-group"><label>Período</label><input type="date" class="filter-input" id="filtroDataInicio"><span class="filter-sep">até</span><input type="date" class="filter-input" id="filtroDataFim"></div>
+                    <div class="filter-group"><label>Vendedor(a)</label><select class="filter-input" id="filtroVendedora"><option value="">Todos</option></select></div>
+                    <div class="filter-group"><label>Status</label><select class="filter-input" id="filtroStatus"><option value="">Todos</option><option value="Pago e Assinado">Pago e Assinado</option><option value="Apenas Assinado">Apenas Assinado</option></select></div>
                     <button class="btn-text" onclick="clearFilters()"><i class="fas fa-times"></i> Limpar</button>
                 </div>
                 <div class="table-card">
-                    <div style="overflow-x:auto;">
-                        <table>
-                            <thead>
-                                <tr><th>Data</th><th>Vendedora</th><th>Horário</th><th>Cliente</th><th>Marca</th><th>Status</th><th>Valor</th><th>Ações</th></tr>
-                            </thead>
-                            <tbody id="tabelaFechamentos"></tbody>
-                        </table>
-                    </div>
+                    <div style="overflow-x:auto;"><table><thead><tr><th>Data</th><th>Vendedor(a)</th><th>Horário</th><th>Cliente</th><th>Marca</th><th>Status</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="tabelaFechamentos"></tbody></table></div>
                     <div style="padding:12px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);" id="registrosInfo">0 registros</div>
                 </div>
             </div>
 
-            <!-- VENDEDORAS -->
+            <!-- VENDEDORES -->
             <div class="page" id="page-vendedoras">
-                <div class="section-head"><h3>Desempenho das Vendedoras</h3></div>
+                <div class="section-head">
+                    <h3>Desempenho dos Vendedores</h3>
+                    <button class="btn-gold" onclick="adicionarNovoVendedor()"><i class="fas fa-plus"></i> Novo Vendedor</button>
+                </div>
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;" id="vendedorasGrid"></div>
             </div>
 
             <!-- ARQUIVOS -->
             <div class="page" id="page-arquivos">
-                <div class="section-head">
-                    <h3>Arquivo Mensal</h3>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn-outline" onclick="importarDados()"><i class="fas fa-upload"></i> Importar</button>
-                        <button class="btn-gold" onclick="exportarDados()"><i class="fas fa-download"></i> Exportar</button>
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-                    <button class="btn-gold" onclick="fazerBackup()"><i class="fas fa-save"></i> Backup</button>
-                    <button class="btn-outline" onclick="restaurarBackup()"><i class="fas fa-undo"></i> Restaurar</button>
-                    <button class="btn-outline" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Excel</button>
-                    <button class="btn-outline red" onclick="limparDados()"><i class="fas fa-trash-alt"></i> Limpar</button>
-                </div>
+                <div class="section-head"><h3>Arquivo Mensal</h3><div style="display:flex;gap:8px;"><button class="btn-outline" onclick="importarDados()"><i class="fas fa-upload"></i> Importar</button><button class="btn-gold" onclick="exportarDados()"><i class="fas fa-download"></i> Exportar</button></div></div>
+                <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;"><button class="btn-gold" onclick="fazerBackup()"><i class="fas fa-save"></i> Backup</button><button class="btn-outline" onclick="restaurarBackup()"><i class="fas fa-undo"></i> Restaurar</button><button class="btn-outline" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Excel</button><button class="btn-outline red" onclick="limparDados()"><i class="fas fa-trash-alt"></i> Limpar</button></div>
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;" id="arquivosGrid"></div>
                 <input type="file" id="fileInput" style="display:none;" accept=".json" onchange="carregarArquivo(event)">
             </div>
@@ -1298,38 +1185,42 @@
 <!-- MODAL FECHAMENTO -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-dialog">
-        <div class="modal-head">
-            <h4 id="modalTitle">Novo Fechamento</h4>
-            <button class="btn-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-        </div>
+        <div class="modal-head"><h4 id="modalTitle">Novo Fechamento</h4><button class="btn-close" onclick="closeModal()"><i class="fas fa-times"></i></button></div>
         <form id="formFechamento" onsubmit="salvarFechamento(event)">
             <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group"><label>Data</label><input type="date" id="inputData" required></div>
-                    <div class="form-group"><label>Horário</label><input type="time" id="inputHorario" required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Vendedora</label><input type="text" id="inputVendedora" required placeholder="Nome"></div>
-                    <div class="form-group"><label>Cliente</label><input type="text" id="inputCliente" required placeholder="Nome"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Marca</label><input type="text" id="inputMarca" required placeholder="Marca"></div>
-                    <div class="form-group"><label>Valor (R$)</label><input type="number" id="inputValor" required placeholder="0,00" step="0.01" min="0"></div>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="inputStatus" required>
-                        <option value="">Selecione...</option>
-                        <option value="Pago e Assinado">Pago e Assinado</option>
-                        <option value="Apenas Assinado">Apenas Assinado</option>
-                    </select>
-                </div>
+                <div class="form-row"><div class="form-group"><label>Data</label><input type="date" id="inputData" required></div><div class="form-group"><label>Horário</label><input type="time" id="inputHorario" required></div></div>
+                <div class="form-row"><div class="form-group"><label>Vendedor(a)</label><input type="text" id="inputVendedora" required placeholder="Nome" list="vendedoresList"><datalist id="vendedoresList"></datalist></div><div class="form-group"><label>Cliente</label><input type="text" id="inputCliente" required placeholder="Nome"></div></div>
+                <div class="form-row"><div class="form-group"><label>Marca</label><input type="text" id="inputMarca" required placeholder="Marca"></div><div class="form-group"><label>Valor (R$)</label><input type="number" id="inputValor" required placeholder="0,00" step="0.01" min="0"></div></div>
+                <div class="form-group"><label>Status</label><select id="inputStatus" required><option value="">Selecione...</option><option value="Pago e Assinado">Pago e Assinado</option><option value="Apenas Assinado">Apenas Assinado</option></select></div>
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-outline" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn-gold">Salvar</button>
-            </div>
+            <div class="modal-actions"><button type="button" class="btn-outline" onclick="closeModal()">Cancelar</button><button type="submit" class="btn-gold">Salvar</button></div>
         </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR VENDEDOR -->
+<div class="modal-overlay" id="modalEditVendedor">
+    <div class="modal-dialog" style="max-width:400px;">
+        <div class="modal-head"><h4><i class="fas fa-edit"></i> Editar Vendedor</h4><button class="btn-close" onclick="closeVendedorEdit()"><i class="fas fa-times"></i></button></div>
+        <div class="modal-body">
+            <input type="hidden" id="editVendedorOldName">
+            <div class="form-group"><label>Novo Nome</label><input type="text" id="editVendedorNewName" placeholder="Nome do vendedor"></div>
+        </div>
+        <div class="modal-actions" style="justify-content:space-between;">
+            <button class="btn-outline red" onclick="removerVendedor()"><i class="fas fa-trash"></i> Remover</button>
+            <button class="btn-gold" onclick="salvarNomeVendedor()"><i class="fas fa-save"></i> Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL NOVO VENDEDOR -->
+<div class="modal-overlay" id="modalNovoVendedor">
+    <div class="modal-dialog" style="max-width:400px;">
+        <div class="modal-head"><h4><i class="fas fa-plus"></i> Novo Vendedor</h4><button class="btn-close" onclick="closeNovoVendedor()"><i class="fas fa-times"></i></button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Nome</label><input type="text" id="novoVendedorNome" placeholder="Nome do vendedor"></div>
+        </div>
+        <div class="modal-actions"><button class="btn-outline" onclick="closeNovoVendedor()">Cancelar</button><button class="btn-gold" onclick="criarNovoVendedor()"><i class="fas fa-check"></i> Criar</button></div>
     </div>
 </div>
 
@@ -1340,8 +1231,70 @@
     let data = [];
     let nextId = 1;
     let editId = null;
+    
+    // Lista completa de vendedores
+    let vendedoresList = JSON.parse(localStorage.getItem('cf_vendedores_list')) || ['PATRICIA','JULYA','EVELLYN','NATALY','VITÓRIA','ENZO','SOPHIA','NICOLY'];
+
+    function salvarVendedores() { localStorage.setItem('cf_vendedores_list', JSON.stringify(vendedoresList)); }
+    function atualizarDatalist() {
+        const dl = document.getElementById('vendedoresList');
+        if(dl) dl.innerHTML = vendedoresList.map(v => `<option value="${v}">`).join('');
+    }
+
+    // ========== VENDEDOR EDIT ==========
+    window.editarNomeVendedor = function(nomeAntigo) {
+        document.getElementById('modalEditVendedor').classList.add('show');
+        document.getElementById('editVendedorOldName').value = nomeAntigo;
+        document.getElementById('editVendedorNewName').value = nomeAntigo;
+        document.getElementById('editVendedorNewName').focus();
+        document.body.style.overflow = 'hidden';
+    };
+    window.closeVendedorEdit = function() {
+        document.getElementById('modalEditVendedor').classList.remove('show');
+        document.body.style.overflow = '';
+    };
+    window.salvarNomeVendedor = function() {
+        const oldName = document.getElementById('editVendedorOldName').value.trim().toUpperCase();
+        const newName = document.getElementById('editVendedorNewName').value.trim().toUpperCase();
+        if (!newName) { showToast('Nome obrigatório!','error'); return; }
+        if (vendedoresList.includes(newName) && oldName !== newName) { showToast('Nome já existe!','error'); return; }
+        const idx = vendedoresList.indexOf(oldName);
+        if (idx >= 0) vendedoresList[idx] = newName;
+        data.forEach(f => { if (f.vendedora === oldName) f.vendedora = newName; });
+        salvarVendedores(); saveData(); atualizarDatalist();
+        closeVendedorEdit(); renderAll(); showToast('Vendedor atualizado!','success');
+    };
+    window.removerVendedor = function() {
+        const oldName = document.getElementById('editVendedorOldName').value.trim().toUpperCase();
+        if (!confirm(`Remover "${oldName}" e todos os fechamentos?`)) return;
+        vendedoresList = vendedoresList.filter(v => v !== oldName);
+        data = data.filter(f => f.vendedora !== oldName);
+        salvarVendedores(); saveData(); atualizarDatalist();
+        closeVendedorEdit(); renderAll(); showToast('Vendedor removido!','success');
+    };
+
+    // ========== NOVO VENDEDOR ==========
+    window.adicionarNovoVendedor = function() {
+        document.getElementById('modalNovoVendedor').classList.add('show');
+        document.getElementById('novoVendedorNome').value = '';
+        document.getElementById('novoVendedorNome').focus();
+        document.body.style.overflow = 'hidden';
+    };
+    window.closeNovoVendedor = function() {
+        document.getElementById('modalNovoVendedor').classList.remove('show');
+        document.body.style.overflow = '';
+    };
+    window.criarNovoVendedor = function() {
+        const nome = document.getElementById('novoVendedorNome').value.trim().toUpperCase();
+        if (!nome) { showToast('Nome obrigatório!','error'); return; }
+        if (vendedoresList.includes(nome)) { showToast('Já existe!','error'); return; }
+        vendedoresList.push(nome);
+        salvarVendedores(); atualizarDatalist();
+        closeNovoVendedor(); renderAll(); showToast('Vendedor adicionado!','success');
+    };
 
     function init() {
+        if (!localStorage.getItem('cf_vendedores_list')) salvarVendedores();
         loadData();
         carregarNomeAdmin();
         setupNav();
@@ -1349,12 +1302,12 @@
         setupModal();
         setupMenuToggle();
         updateDate();
+        atualizarDatalist();
         renderAll();
         setInterval(autoBackup, 30000);
         window.addEventListener('beforeunload', autoBackup);
     }
 
-    // ========== ADMIN ==========
     function carregarNomeAdmin() {
         const nomeSalvo = localStorage.getItem('cf_admin_name');
         if (nomeSalvo) atualizarUIAdmin(nomeSalvo);
@@ -1374,15 +1327,10 @@
         overlay.innerHTML = `
             <div class="admin-edit-dialog" onclick="event.stopPropagation()">
                 <div class="admin-avatar-large" id="adminAvatarLarge">${cleanName.charAt(0).toUpperCase()}</div>
-                <h4>Editar Perfil</h4>
-                <p>Personalize o nome do administrador</p>
+                <h4>Editar Perfil</h4><p>Personalize o nome do administrador</p>
                 <input type="text" class="input-admin-name" id="inputAdminName" value="${cleanName}" placeholder="Seu nome" maxlength="30" oninput="document.getElementById('adminAvatarLarge').textContent = this.value.charAt(0).toUpperCase()">
-                <div class="admin-edit-actions">
-                    <button class="btn-outline" onclick="this.closest('.admin-edit-overlay').remove()">Cancelar</button>
-                    <button class="btn-gold" onclick="salvarNomeAdmin()">Salvar</button>
-                </div>
-            </div>
-        `;
+                <div class="admin-edit-actions"><button class="btn-outline" onclick="this.closest('.admin-edit-overlay').remove()">Cancelar</button><button class="btn-gold" onclick="salvarNomeAdmin()">Salvar</button></div>
+            </div>`;
         document.body.appendChild(overlay);
         setTimeout(() => { const inp = document.getElementById('inputAdminName'); if(inp) { inp.focus(); inp.select(); } }, 100);
     };
@@ -1395,23 +1343,14 @@
         showToast('Nome atualizado!', 'success');
     };
 
-    // ========== DATA ==========
     function loadData() {
         const saved = localStorage.getItem('cf_exec_v4');
-        if (saved) {
-            try { const p = JSON.parse(saved); data = p.data || []; nextId = p.nextId || 1; } catch(e) { loadDemo(); }
-        } else {
-            const ab = localStorage.getItem('cf_auto_backup');
-            if (ab) {
-                try { const p = JSON.parse(ab); data = p.data || []; nextId = p.nextId || 1; saveData(); } catch(e) { loadDemo(); }
-            } else { loadDemo(); }
-        }
+        if (saved) { try { const p = JSON.parse(saved); data = p.data || []; nextId = p.nextId || 1; } catch(e) { loadDemo(); } }
+        else { const ab = localStorage.getItem('cf_auto_backup'); if (ab) { try { const p = JSON.parse(ab); data = p.data || []; nextId = p.nextId || 1; saveData(); } catch(e) { loadDemo(); } } else { loadDemo(); } }
     }
 
     function loadDemo() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const now = new Date(); const y = now.getFullYear(); const m = String(now.getMonth() + 1).padStart(2, '0');
         data = [
             { id:1, data:`${y}-${m}-07`, vendedora:'NATALY', horario:'08:17', cliente:'ANDERSON ARCANJO DO SANTOS', marca:'Registro de Marca', status:'Pago e Assinado', valor:198.00 },
             { id:2, data:`${y}-${m}-07`, vendedora:'JULYA', horario:'09:37', cliente:'GEZILDO JOAO ALVES DE OLIVEIRA', marca:'Registro de Marca', status:'Pago e Assinado', valor:198.00 },
@@ -1419,45 +1358,30 @@
             { id:4, data:`${y}-${m}-07`, vendedora:'PATRICIA', horario:'11:54', cliente:'RAFAEL LAYA RAPOSO', marca:'Registro de Marca', status:'Apenas Assinado', valor:168.00 },
             { id:5, data:`${y}-${m}-07`, vendedora:'JULYA', horario:'12:00', cliente:'JOSE WAGNER OLIVEIRA', marca:'Registro de Marca', status:'Apenas Assinado', valor:168.00 },
         ];
-        nextId = 6;
-        saveData();
+        nextId = 6; saveData();
     }
 
     function saveData() { localStorage.setItem('cf_exec_v4', JSON.stringify({ data, nextId })); autoBackup(); }
     function autoBackup() { localStorage.setItem('cf_auto_backup', JSON.stringify({ data, nextId, ts: new Date().toISOString() })); }
 
-    // ========== NAV ==========
-    function setupNav() {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() { navigateTo(this.dataset.page); });
-        });
-    }
+    function setupNav() { document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', function() { navigateTo(this.dataset.page); }); }); }
 
     window.navigateTo = function(page) {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.page === page));
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         const panel = document.getElementById(`page-${page}`);
         if (panel) panel.classList.add('active');
-        const titles = { dashboard:'Dashboard Executivo', fechamentos:'Gestão de Fechamentos', vendedoras:'Desempenho das Vendedoras', arquivos:'Arquivo Mensal' };
+        const titles = { dashboard:'Dashboard Executivo', fechamentos:'Gestão de Fechamentos', vendedoras:'Desempenho dos Vendedores', arquivos:'Arquivo Mensal' };
         document.getElementById('pageTitle').textContent = titles[page] || page;
         renderPage(page);
     };
 
     function renderPage(page) {
-        switch(page) {
-            case 'dashboard': renderDashboard(); break;
-            case 'fechamentos': renderFechamentos(); break;
-            case 'vendedoras': renderVendedoras(); break;
-            case 'arquivos': renderArquivos(); break;
-        }
+        switch(page) { case 'dashboard': renderDashboard(); break; case 'fechamentos': renderFechamentos(); break; case 'vendedoras': renderVendedoras(); break; case 'arquivos': renderArquivos(); break; }
     }
 
-    function renderAll() {
-        renderDashboard(); renderFechamentos(); renderVendedoras(); renderArquivos();
-        document.getElementById('navCount').textContent = data.length;
-    }
+    function renderAll() { renderDashboard(); renderFechamentos(); renderVendedoras(); renderArquivos(); document.getElementById('navCount').textContent = data.length; }
 
-    // ========== DASHBOARD ==========
     function renderDashboard() {
         const pagos = data.filter(f => f.status === 'Pago e Assinado');
         const assinados = data.filter(f => f.status === 'Apenas Assinado');
@@ -1472,12 +1396,7 @@
             recentes.map(f => `<tr><td>${fmtDate(f.data)}</td><td>${f.vendedora}</td><td>${f.cliente}</td><td>${f.marca}</td><td>${badge(f.status)}</td><td class="${f.status==='Pago e Assinado'?'valor-paid':'valor-pending'}">R$ ${f.valor.toFixed(2)}</td></tr>`).join('');
     }
 
-    // ========== FECHAMENTOS ==========
-    function setupFilters() {
-        ['filtroDataInicio','filtroDataFim','filtroVendedora','filtroStatus'].forEach(id => {
-            document.getElementById(id).addEventListener('change', applyFilters);
-        });
-    }
+    function setupFilters() { ['filtroDataInicio','filtroDataFim','filtroVendedora','filtroStatus'].forEach(id => { document.getElementById(id).addEventListener('change', applyFilters); }); }
 
     function applyFilters() {
         const di = document.getElementById('filtroDataInicio').value;
@@ -1502,21 +1421,15 @@
         document.getElementById('registrosInfo').textContent = `${filtered.length} registro(s)`;
     }
 
-    window.clearFilters = function() {
-        ['filtroDataInicio','filtroDataFim','filtroVendedora','filtroStatus'].forEach(id => document.getElementById(id).value = '');
-        applyFilters();
-    };
+    window.clearFilters = function() { ['filtroDataInicio','filtroDataFim','filtroVendedora','filtroStatus'].forEach(id => document.getElementById(id).value = ''); applyFilters(); };
 
     function renderFechamentos() {
-        const vendedoras = [...new Set(data.map(f => f.vendedora))].sort();
-        document.getElementById('filtroVendedora').innerHTML = '<option value="">Todas</option>' + vendedoras.map(v => `<option value="${v}">${v}</option>`).join('');
+        const filtroVend = document.getElementById('filtroVendedora');
+        filtroVend.innerHTML = '<option value="">Todos</option>' + vendedoresList.map(v => `<option value="${v}">${v}</option>`).join('');
         applyFilters();
     }
 
-    // ========== MODAL ==========
-    function setupModal() {
-        document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-    }
+    function setupModal() { document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); }); }
 
     window.openModal = function(id) {
         editId = id || null;
@@ -1541,11 +1454,7 @@
         document.body.style.overflow = 'hidden';
     };
 
-    window.closeModal = function() {
-        document.getElementById('modalOverlay').classList.remove('show');
-        document.body.style.overflow = '';
-        editId = null;
-    };
+    window.closeModal = function() { document.getElementById('modalOverlay').classList.remove('show'); document.body.style.overflow = ''; editId = null; };
 
     window.salvarFechamento = function(e) {
         e.preventDefault();
@@ -1558,43 +1467,35 @@
             status: document.getElementById('inputStatus').value,
             valor: parseFloat(document.getElementById('inputValor').value)
         };
-        if(!f.data || !f.vendedora || !f.cliente || !f.marca || !f.status || isNaN(f.valor)) {
-            showToast('Preencha todos os campos!', 'error'); return;
-        }
-        if(editId) {
-            const idx = data.findIndex(x => x.id === editId);
-            if(idx !== -1) { data[idx] = {...data[idx], ...f}; showToast('Atualizado!', 'success'); }
-        } else {
-            data.push({ id: nextId++, ...f });
-            showToast('Criado!', 'success');
-        }
+        if(!f.data || !f.vendedora || !f.cliente || !f.marca || !f.status || isNaN(f.valor)) { showToast('Preencha todos!', 'error'); return; }
+        if(editId) { const idx = data.findIndex(x => x.id === editId); if(idx !== -1) { data[idx] = {...data[idx], ...f}; showToast('Atualizado!', 'success'); } }
+        else { data.push({ id: nextId++, ...f }); showToast('Criado!', 'success'); }
         saveData(); closeModal(); renderAll();
     };
 
     window.editFechamento = function(id) { openModal(id); };
-    window.deleteFechamento = function(id) {
-        const f = data.find(x => x.id === id);
-        if(f && confirm(`Excluir ${f.cliente}?`)) { data = data.filter(x => x.id !== id); saveData(); renderAll(); showToast('Excluído!', 'success'); }
-    };
+    window.deleteFechamento = function(id) { const f = data.find(x => x.id === id); if(f && confirm(`Excluir ${f.cliente}?`)) { data = data.filter(x => x.id !== id); saveData(); renderAll(); showToast('Excluído!', 'success'); } };
 
     // ========== VENDEDORAS ==========
     function renderVendedoras() {
         const container = document.getElementById('vendedorasGrid');
         const vend = {};
+        vendedoresList.forEach(v => { vend[v] = { total:0, pagos:0, assinados:0, valorPagos:0, valorAssinados:0 }; });
         data.forEach(f => {
             if(!vend[f.vendedora]) vend[f.vendedora] = { total:0, pagos:0, assinados:0, valorPagos:0, valorAssinados:0 };
             vend[f.vendedora].total++;
             if(f.status === 'Pago e Assinado') { vend[f.vendedora].pagos++; vend[f.vendedora].valorPagos += f.valor; }
             else { vend[f.vendedora].assinados++; vend[f.vendedora].valorAssinados += f.valor; }
         });
-        if(Object.keys(vend).length === 0) {
-            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748b;">Nenhuma vendedora</div>'; return;
-        }
+        if(Object.keys(vend).length === 0) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748b;">Nenhum vendedor</div>'; return; }
         container.innerHTML = Object.entries(vend).sort((a,b)=>b[1].total-a[1].total).map(([nome,s]) => `
             <div style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
                     <div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#c9a84c;">${nome.charAt(0)}</div>
-                    <div><h5 style="font-size:14px;font-weight:600;color:#fff;">${nome}</h5><div style="font-size:10px;color:#64748b;">${s.total} fechamentos</div></div>
+                    <div>
+                        <span class="vendedor-name-editable" onclick="editarNomeVendedor('${nome}')"><h5 style="font-size:14px;font-weight:600;color:#fff;margin:0;">${nome} <i class="fas fa-pen"></i></h5></span>
+                        <div style="font-size:10px;color:#64748b;">${s.total} fechamentos</div>
+                    </div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
                     <div style="padding:10px;background:rgba(16,185,129,0.1);border-radius:8px;text-align:center;">
@@ -1616,146 +1517,45 @@
         `).join('');
     }
 
-    // ========== ARQUIVOS ==========
     function renderArquivos() {
         const container = document.getElementById('arquivosGrid');
         const meses = {};
         data.forEach(f => { const k = f.data.substring(0,7); if(!meses[k]) meses[k] = []; meses[k].push(f); });
-        if(Object.keys(meses).length === 0) {
-            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748b;">Nenhum arquivo</div>'; return;
-        }
+        if(Object.keys(meses).length === 0) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748b;">Nenhum arquivo</div>'; return; }
         container.innerHTML = Object.entries(meses).sort((a,b)=>b[0].localeCompare(a[0])).map(([mes,items]) => {
-            const [ano, mesNum] = mes.split('-');
-            const nome = getMonthName(parseInt(mesNum));
-            const pagos = items.filter(i=>i.status==='Pago e Assinado');
-            const assinados = items.filter(i=>i.status==='Apenas Assinado');
-            return `
-                <div style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all 0.3s;" onclick="openArquivo('${mes}')" onmouseover="this.style.borderColor='#c9a84c';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)';this.style.transform='';">
-                    <div style="font-size:34px;margin-bottom:12px;color:#c9a84c;">📁</div>
-                    <h5 style="font-size:14px;font-weight:600;color:#fff;">${nome} ${ano}</h5>
-                    <div style="font-size:11px;color:#64748b;margin-top:2px;">${items.length} fechamentos</div>
-                    <div style="font-size:11px;color:#10b981;margin-top:3px;"><strong>R$ ${pagos.reduce((s,i)=>s+i.valor,0).toFixed(2)}</strong> pagos</div>
-                    <div style="font-size:11px;color:#c9a84c;"><strong>R$ ${assinados.reduce((s,i)=>s+i.valor,0).toFixed(2)}</strong> assinados</div>
-                </div>
-            `;
+            const [ano, mesNum] = mes.split('-'); const nome = getMonthName(parseInt(mesNum));
+            const pagos = items.filter(i=>i.status==='Pago e Assinado'), assinados = items.filter(i=>i.status==='Apenas Assinado');
+            return `<div style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all 0.3s;" onclick="openArquivo('${mes}')" onmouseover="this.style.borderColor='#c9a84c';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)';this.style.transform='';"><div style="font-size:34px;margin-bottom:12px;color:#c9a84c;">📁</div><h5 style="font-size:14px;font-weight:600;color:#fff;">${nome} ${ano}</h5><div style="font-size:11px;color:#64748b;margin-top:2px;">${items.length} fechamentos</div><div style="font-size:11px;color:#10b981;margin-top:3px;"><strong>R$ ${pagos.reduce((s,i)=>s+i.valor,0).toFixed(2)}</strong> pagos</div><div style="font-size:11px;color:#c9a84c;"><strong>R$ ${assinados.reduce((s,i)=>s+i.valor,0).toFixed(2)}</strong> assinados</div></div>`;
         }).join('');
     }
 
     window.openArquivo = function(mes) {
-        const [ano, mesNum] = mes.split('-');
-        const nome = getMonthName(parseInt(mesNum));
-        const items = data.filter(f => f.data.startsWith(mes));
-        const pagos = items.filter(i=>i.status==='Pago e Assinado');
-        const assinados = items.filter(i=>i.status==='Apenas Assinado');
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay show';
+        const [ano, mesNum] = mes.split('-'); const nome = getMonthName(parseInt(mesNum));
+        const items = data.filter(f => f.data.startsWith(mes)), pagos = items.filter(i=>i.status==='Pago e Assinado'), assinados = items.filter(i=>i.status==='Apenas Assinado');
+        const overlay = document.createElement('div'); overlay.className = 'modal-overlay show';
         overlay.onclick = function(e) { if(e.target===this) this.remove(); };
-        overlay.innerHTML = `
-            <div class="modal-dialog" style="max-width:750px;" onclick="event.stopPropagation()">
-                <div class="modal-head"><h4>📁 ${nome} ${ano}</h4><button class="btn-close" onclick="this.closest('.modal-overlay').remove()"><i class="fas fa-times"></i></button></div>
-                <div style="padding:20px;">
-                    <div class="totals-row">
-                        <div class="total-box green-box"><h5>Pagos e Assinados</h5><div class="big-val">R$ ${pagos.reduce((s,i)=>s+i.valor,0).toFixed(2)}</div><div style="font-size:10px;color:#64748b;">${pagos.length} contratos</div></div>
-                        <div class="total-box gold-box"><h5>Apenas Assinados</h5><div class="big-val">R$ ${assinados.reduce((s,i)=>s+i.valor,0).toFixed(2)}</div><div style="font-size:10px;color:#64748b;">${assinados.length} contratos</div></div>
-                    </div>
-                    <table><thead><tr><th>Data</th><th>Vendedora</th><th>Cliente</th><th>Marca</th><th>Status</th><th>Valor</th></tr></thead>
-                        <tbody>${items.map(f => `<tr><td>${fmtDate(f.data)}</td><td>${f.vendedora}</td><td>${f.cliente}</td><td>${f.marca}</td><td>${badge(f.status)}</td><td class="${f.status==='Pago e Assinado'?'valor-paid':'valor-pending'}">R$ ${f.valor.toFixed(2)}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            </div>
-        `;
+        overlay.innerHTML = `<div class="modal-dialog" style="max-width:750px;" onclick="event.stopPropagation()"><div class="modal-head"><h4>📁 ${nome} ${ano}</h4><button class="btn-close" onclick="this.closest('.modal-overlay').remove()"><i class="fas fa-times"></i></button></div><div style="padding:20px;"><div class="totals-row"><div class="total-box green-box"><h5>Pagos e Assinados</h5><div class="big-val">R$ ${pagos.reduce((s,i)=>s+i.valor,0).toFixed(2)}</div><div style="font-size:10px;color:#64748b;">${pagos.length} contratos</div></div><div class="total-box gold-box"><h5>Apenas Assinados</h5><div class="big-val">R$ ${assinados.reduce((s,i)=>s+i.valor,0).toFixed(2)}</div><div style="font-size:10px;color:#64748b;">${assinados.length} contratos</div></div></div><table><thead><tr><th>Data</th><th>Vendedora</th><th>Cliente</th><th>Marca</th><th>Status</th><th>Valor</th></tr></thead><tbody>${items.map(f => `<tr><td>${fmtDate(f.data)}</td><td>${f.vendedora}</td><td>${f.cliente}</td><td>${f.marca}</td><td>${badge(f.status)}</td><td class="${f.status==='Pago e Assinado'?'valor-paid':'valor-pending'}">R$ ${f.valor.toFixed(2)}</td></tr>`).join('')}</tbody></table></div></div>`;
         document.body.appendChild(overlay);
     };
 
-    // ========== FILES ==========
-    window.fazerBackup = function() {
-        const json = JSON.stringify({ data, nextId, ts: new Date().toISOString() }, null, 2);
-        const blob = new Blob([json], { type:'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
-        URL.revokeObjectURL(url); showToast('Backup criado!', 'success');
-    };
+    window.fazerBackup = function() { const json = JSON.stringify({ data, nextId, ts: new Date().toISOString() }, null, 2); const blob = new Blob([json], { type:'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `backup_${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); showToast('Backup criado!', 'success'); };
     window.restaurarBackup = function() { document.getElementById('fileInput').click(); };
-    window.carregarArquivo = function(event) {
-        const file = event.target.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const backup = JSON.parse(e.target.result);
-                if(backup.data && Array.isArray(backup.data)) {
-                    if(confirm(`Restaurar ${backup.data.length} registros?`)) {
-                        data = backup.data; nextId = backup.nextId || Math.max(...data.map(f=>f.id),0)+1;
-                        saveData(); renderAll(); showToast('Restaurado!', 'success');
-                    }
-                }
-            } catch(err) { showToast('Arquivo inválido!', 'error'); }
-        };
-        reader.readAsText(file); event.target.value = '';
-    };
-    window.importarDados = function() {
-        const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json';
-        inp.onchange = function(e) {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    const imported = JSON.parse(ev.target.result);
-                    const arr = imported.data || imported;
-                    if(Array.isArray(arr)) {
-                        let added = 0;
-                        arr.forEach(f => { const exists = data.find(x=>x.data===f.data&&x.vendedora===f.vendedora&&x.cliente===f.cliente); if(!exists){ data.push({...f, id:nextId++}); added++; } });
-                        saveData(); renderAll(); showToast(`${added} importados!`, 'success');
-                    }
-                } catch(err) { showToast('Erro!', 'error'); }
-            };
-            reader.readAsText(file);
-        };
-        inp.click();
-    };
-    window.exportarDados = function() {
-        const json = JSON.stringify({ data, nextId, exportado: new Date().toISOString() }, null, 2);
-        const blob = new Blob([json], { type:'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `fechamentos_${new Date().toISOString().split('T')[0]}.json`; a.click();
-        URL.revokeObjectURL(url); showToast('Exportado!', 'success');
-    };
-    window.exportarExcel = function() {
-        if(data.length === 0) { showToast('Sem dados!', 'error'); return; }
-        let csv = '\uFEFFData;Vendedora;Horário;Cliente;Marca;Status;Valor\n';
-        data.forEach(f => { csv += `${fmtDate(f.data)};${f.vendedora};${f.horario};${f.cliente};${f.marca};${f.status};R$ ${f.valor.toFixed(2)}\n`; });
-        const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `excel_${new Date().toISOString().split('T')[0]}.csv`; a.click();
-        URL.revokeObjectURL(url); showToast('Excel exportado!', 'success');
-    };
-    window.limparDados = function() {
-        if(data.length === 0) return;
-        if(confirm('Limpar TODOS os dados?')) { data = []; nextId = 1; saveData(); renderAll(); showToast('Dados limpos!', 'success'); }
-    };
+    window.carregarArquivo = function(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const backup = JSON.parse(e.target.result); if(backup.data && Array.isArray(backup.data)) { if(confirm(`Restaurar ${backup.data.length} registros?`)) { data = backup.data; nextId = backup.nextId || Math.max(...data.map(f=>f.id),0)+1; saveData(); renderAll(); showToast('Restaurado!', 'success'); } } } catch(err) { showToast('Arquivo inválido!', 'error'); } }; reader.readAsText(file); event.target.value = ''; };
+    window.importarDados = function() { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json'; inp.onchange = function(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(ev) { try { const imported = JSON.parse(ev.target.result); const arr = imported.data || imported; if(Array.isArray(arr)) { let added = 0; arr.forEach(f => { const exists = data.find(x=>x.data===f.data&&x.vendedora===f.vendedora&&x.cliente===f.cliente); if(!exists){ data.push({...f, id:nextId++}); added++; } }); saveData(); renderAll(); showToast(`${added} importados!`, 'success'); } } catch(err) { showToast('Erro!', 'error'); } }; reader.readAsText(file); }; inp.click(); };
+    window.exportarDados = function() { const json = JSON.stringify({ data, nextId, exportado: new Date().toISOString() }, null, 2); const blob = new Blob([json], { type:'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `fechamentos_${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); showToast('Exportado!', 'success'); };
+    window.exportarExcel = function() { if(data.length === 0) { showToast('Sem dados!', 'error'); return; } let csv = '\uFEFFData;Vendedora;Horário;Cliente;Marca;Status;Valor\n'; data.forEach(f => { csv += `${fmtDate(f.data)};${f.vendedora};${f.horario};${f.cliente};${f.marca};${f.status};R$ ${f.valor.toFixed(2)}\n`; }); const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `excel_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(url); showToast('Excel exportado!', 'success'); };
+    window.limparDados = function() { if(data.length === 0) return; if(confirm('Limpar TODOS os dados?')) { data = []; nextId = 1; saveData(); renderAll(); showToast('Dados limpos!', 'success'); } };
 
-    // ========== UTILS ==========
-    function setupMenuToggle() {
-        document.getElementById('btnMenuToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-            document.getElementById('mainArea').classList.toggle('expanded');
-        });
-    }
-    function updateDate() {
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' });
-    }
+    function setupMenuToggle() { document.getElementById('btnMenuToggle').addEventListener('click', function() { document.getElementById('sidebar').classList.toggle('collapsed'); document.getElementById('mainArea').classList.toggle('expanded'); }); }
+    function updateDate() { document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }); }
     function fmtDate(d) { const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`; }
     function getMonthName(n) { const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']; return months[n-1]; }
     function badge(s) { const cls = s === 'Pago e Assinado' ? 'paid' : 'pending'; return `<span class="badge ${cls}">${s}</span>`; }
-    function showToast(msg, type) {
-        const t = document.createElement('div'); t.className = `toast ${type}`;
-        t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'times-circle'}"></i> ${msg}`;
-        document.body.appendChild(t);
-        setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(120%)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(),300); }, 3000);
-    }
-    document.addEventListener('keydown', function(e) {
-        if(e.ctrlKey && e.key === 'n') { e.preventDefault(); openModal(); }
-        if(e.key === 'Escape') { closeModal(); }
-    });
+    function showToast(msg, type) { const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'times-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(120%)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(),300); }, 3000); }
+
+    document.addEventListener('keydown', function(e) { if(e.ctrlKey && e.key === 'n') { e.preventDefault(); openModal(); } if(e.key === 'Escape') { closeModal(); closeVendedorEdit(); closeNovoVendedor(); } });
+    document.getElementById('modalEditVendedor').addEventListener('click', function(e) { if(e.target === this) closeVendedorEdit(); });
+    document.getElementById('modalNovoVendedor').addEventListener('click', function(e) { if(e.target === this) closeNovoVendedor(); });
 
     init();
 })();
