@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Dados | ControlePro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --bg: #030712; --bg3: #111827; --primary: #4f46e5; --emerald: #10b981;
+            --text: #f1f5f9; --text3: #64748b; --border: rgba(255,255,255,0.05);
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'Inter',sans-serif; background:var(--bg); color:var(--text);
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+        }
+        .container{max-width:600px; width:90%; padding:20px}
+        .card{
+            background:rgba(17,24,39,0.8); backdrop-filter:blur(20px);
+            border:1px solid var(--border); border-radius:20px; padding:40px 30px; text-align:center;
+        }
+        h2{font-size:24px; font-weight:700; margin-bottom:8px}
+        p{color:var(--text3); margin-bottom:24px; font-size:14px}
+        .upload-area{
+            border:2px dashed rgba(255,255,255,0.15);
+            border-radius:16px; padding:40px; cursor:pointer; margin-bottom:24px;
+            transition:all 0.3s;
+        }
+        .upload-area:hover{border-color:var(--primary); background:rgba(79,70,229,0.05)}
+        .upload-area i{font-size:48px; color:var(--primary); margin-bottom:16px}
+        .btn{
+            padding:14px 28px; border:none; border-radius:12px; font-size:15px; font-weight:600;
+            cursor:pointer; font-family:inherit; transition:all 0.3s;
+            background:linear-gradient(135deg, var(--primary), #7c3aed);
+            color:#fff; box-shadow:0 4px 15px rgba(79,70,229,0.3);
+        }
+        .btn:hover{transform:translateY(-2px)}
+        .btn:disabled{opacity:0.5; cursor:not-allowed; transform:none}
+        .log{text-align:left; margin-top:20px; padding:16px; background:rgba(0,0,0,0.3); border-radius:12px; max-height:300px; overflow-y:auto; font-size:12px; font-family:monospace; display:none}
+        .log.show{display:block}
+        .log .ok{color:var(--emerald)}.log .err{color:#ef4444}
+        #fileInput{display:none}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2>📥 Importar Dados</h2>
+        <p>Selecione o arquivo <strong>dados_antigos.json</strong> que você exportou do sistema antigo</p>
+        
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <div style="font-size:16px;font-weight:600">Clique para selecionar o arquivo</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:4px">ou arraste aqui</div>
+        </div>
+        
+        <input type="file" id="fileInput" accept=".json" onchange="handleFile(event)">
+        <button class="btn" id="btnImportar" onclick="importarDados()" disabled>
+            <i class="fas fa-upload"></i> Importar Dados
+        </button>
+        
+        <div class="log" id="log"></div>
+    </div>
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyCPiGXTl0k1Kq4RYEiABZ6tBxScitRhFwM",
+    authDomain: "controle-de-fechamento-f8137.firebaseapp.com",
+    projectId: "controle-de-fechamento-f8137",
+    storageBucket: "controle-de-fechamento-f8137.firebasestorage.app",
+    messagingSenderId: "1016803983243",
+    appId: "1:1016803983243:web:66f2ad592c824bd847798e"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let dadosImportar = null;
+
+// Verificar login
+auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+        document.body.innerHTML = '<div style="text-align:center;padding:60px"><h2>⚠️ Acesso negado</h2><p>Faça login primeiro no sistema</p><a href="index.html" style="color:#818cf8">Ir para login</a></div>';
+        return;
+    }
+    
+    // Verificar se é admin
+    const userDoc = await db.collection('usuarios').doc(user.uid).get();
+    if (!userDoc.exists || userDoc.data().role !== 'admin') {
+        document.body.innerHTML = '<div style="text-align:center;padding:60px"><h2>⚠️ Acesso restrito</h2><p>Apenas administradores podem importar dados</p></div>';
+        return;
+    }
+});
+
+function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            dadosImportar = JSON.parse(e.target.result);
+            document.getElementById('btnImportar').disabled = false;
+            document.getElementById('btnImportar').innerHTML = `<i class="fas fa-upload"></i> Importar ${dadosImportar.fechamentos?.length || 0} fechamentos`;
+        } catch(err) {
+            alert('Arquivo inválido!');
+        }
+    };
+    reader.readAsText(file);
+}
+
+async function importarDados() {
+    if (!dadosImportar) return;
+    
+    const btn = document.getElementById('btnImportar');
+    const log = document.getElementById('log');
+    log.classList.add('show');
+    log.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Importando...';
+    
+    let sucessos = 0;
+    let erros = 0;
+    
+    // Importar vendedores
+    if (dadosImportar.vendedores && dadosImportar.vendedores.length > 0) {
+        await db.collection('config').doc('vendedores').set({ lista: dadosImportar.vendedores });
+        log.innerHTML += `<div class="ok">✅ ${dadosImportar.vendedores.length} vendedores importados</div>`;
+    }
+    
+    // Importar fechamentos
+    if (dadosImportar.fechamentos && dadosImportar.fechamentos.length > 0) {
+        for (const f of dadosImportar.fechamentos) {
+            try {
+                const doc = {
+                    data: f.data || '',
+                    horario: f.horario || '00:00',
+                    vendedora: (f.vendedora || '').toUpperCase(),
+                    cliente: (f.cliente || '').toUpperCase(),
+                    marca: f.marca || '',
+                    status: f.status || 'Apenas Assinado',
+                    valor: parseFloat(f.valor) || 0
+                };
+                
+                await db.collection('fechamentos').add(doc);
+                sucessos++;
+                log.innerHTML += `<div class="ok">✅ ${f.cliente} - ${f.marca} (R$ ${doc.valor.toFixed(2)})</div>`;
+            } catch(e) {
+                erros++;
+                log.innerHTML += `<div class="err">❌ Erro: ${f.cliente} - ${e.message}</div>`;
+            }
+        }
+    }
+    
+    log.innerHTML += `<div style="margin-top:12px;font-weight:700">📊 Total: ${sucessos} importados, ${erros} erros</div>`;
+    btn.innerHTML = '✅ Concluído!';
+    btn.disabled = true;
+}
+</script>
+</body>
+</html>
